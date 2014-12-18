@@ -7,7 +7,6 @@ method = 'GA';
 nloop = 500;
 nsol = 500;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('[Problem] %s\n',prob);
 fprintf('[Method] %s\n',method);
@@ -21,8 +20,8 @@ feval(method,func,a,b,nloop,nsol);      % Start Optimization
 end
 function output=resultFolder(prob,method)
 global save_folder;
-CN=getenv('COMPUTERNAME');  r=clock;
-DT=sprintf('%d.%d.%d %02d.%02d.%02.0f',r(3),r(2),r(1),r(4),r(5),r(6));
+CN=getenv('COMPUTERNAME');  r=clock;         
+DT=sprintf('%d.%d.%d %02d.%02d.%02.0f',r(3),r(2),r(1),r(4),r(5),r(6)); 
 save_folder = sprintf('%s - %s - %s - %s',CN,DT,prob,method);
 mkdir(save_folder);
 output = save_folder;
