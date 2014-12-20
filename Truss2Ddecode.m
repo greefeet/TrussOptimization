@@ -6,21 +6,26 @@ global NOF;             % From Encode Function
 global PRB;             % From Problem Function
 
 %Decode %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP0 - DecodeDATA to Raw
+% fprintf('\n>>Performance\n'); 
+% tic
+%STEP0 - DecodeDATA
 FixData=indi(1:1:NOF.FixNode*NOF.EachFixNode);
 FixData=reshape(FixData,[],NOF.FixNode)';
 FreeData=indi(NOF.FixNode*NOF.EachFixNode+1:1:length(indi));
 FreeData=reshape(FreeData,[],NOF.FreeNode)';
+% s(1)=toc;
 
-%Preallowcate
-% ConnectivitySet = struct('SectionIndex',zeros(1,NOF.CrossSectionSet),'Priority',zeros(1,NOF.CrossSectionSet));
+%STEP1 - Preallowcate
+% tic 
 CrossSectionSet = struct('SectionIndex',zeros(1,NOF.CrossSectionSet),'Priority',zeros(1,NOF.CrossSectionSet));
 IndeterminateSet = zeros(1,NOF.IndeterminateZone);
 Raw = repmat(struct('crossSection',CrossSectionSet,'indeStruct',IndeterminateSet), NOF.FixNode+NOF.FreeNode, 1 );
 rawNode = zeros(NOF.FixNode+NOF.FreeNode,2);
 rawAd = zeros(NOF.FixNode+NOF.FreeNode,2);
+% s(2)=toc;
 
-%STEP1 - DecodeNode
+%STEP2 - DecodeNode
+% tic
 noNode = 0;
 for i=1:NOF.FixNode
     %node
@@ -54,16 +59,24 @@ for i=1:NOF.FreeNode
 end
 node = rawNode(1:noNode,1:2); 
 ad = rawAd(1:noNode,1);
+% s(3)=toc;
 
-%STEP2 - DecodeConnectivity
+%STEP3 - DecodeConnectivity 
 %DelaunayTriangulation
+% tic
 x=node(:,1);  y=node(:,2);  tri = delaunay(x,y);  noTri=length(tri(:,1));
+% e(1)=toc;
+
 %Preallowcate
+% tic
 dNode = Node.empty(noNode,0);
 for i=1:noNode
     dNode(i)=Node(node(i,1),node(i,2),NOF.Section);
 end
+% e(2)=toc;
+
 %Determinate Structure
+% tic
 for i=1:noTri
     n1 = tri(i,1);
     n2 = tri(i,2);
@@ -78,7 +91,10 @@ for i=1:noTri
     dNode(n3) = dNode(n3).AddDirectNode(n1,node(n1,1),node(n1,2));
     dNode(n3) = dNode(n3).AddDirectNode(n2,node(n2,1),node(n2,2));
 end
+% e(3)=toc;
+
 %Indeterminate Structure
+% tic
 for i=1:noNode
     if dNode(i).noDirectNode>1
         for j=2:dNode(i).noDirectNode
@@ -98,8 +114,11 @@ for i=1:noNode
         end
     end
 end
+% e(4)=toc; 
+% s(4)=toc;
 
-%STEP2 - Decode CrossSection
+%STEP4 - Decode CrossSection
+% tic
 noTotalMember = 0;
 for i=1:noNode
     noTotalMember = noTotalMember + dNode(i).noDirectNode + dNode(i).noOutNode;
@@ -209,13 +228,11 @@ for i=1:noNode
         isUsed = indeterminateSet(dNode(i).OutNodeZone(j),dNode(i).OutNodeIndeLayer(j));
         dNode(i) = dNode(i).SpectOutNode(j,crossSectionIndex,priority,isUsed);
     end
-    
-    
-%     dNode(i) 
-    
 end
-% fprintf('TotalMember : %d\n',noTotalMember);
-%Build Member
+% s(5)=toc;
+
+%STEP5 - Build Member
+% tic
 rMember=zeros(noTotalMember,5);
 noMember = 0;
 for i=1:noNode
@@ -230,7 +247,7 @@ for i=1:noNode
         rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
     end
     
-    %Build Member from Determinate Structure
+    %Build Member from Indeterminate Structure
     for j=1:dNode(i).noOutNode 
         if dNode(i).OutNodeSectionIsUsed(j) == 1
             noMember = noMember+1;
@@ -243,8 +260,7 @@ for i=1:noNode
         end
     end
 end 
-% rMember
-% fprintf('------------------------------------\n');
+
 rMember = sortrows(rMember,[1 2 -5]);
 oldNode = [0 0];
 nowMember=0;
@@ -255,87 +271,27 @@ for i=1:noTotalMember
         member(nowMember,1:4) = rMember(i,1:4);
     end
 end
-% member
+% s(6)=toc;
+% 
+% 
+% % eSum = sum(e);
+% % s(4)=eSum;
+% sSum = sum(s);
+% 
+% fprintf('  Total : %f\n',sSum);
+% fprintf('  STEP0 - DecodeDATA          : %f (%f%%)\n',s(1),s(1)/sSum*100);
+% fprintf('  STEP1 - Preallowcate        : %f (%f%%)\n',s(2),s(2)/sSum*100);
+% fprintf('  STEP2 - DecodeNode          : %f (%f%%)\n',s(3),s(3)/sSum*100);
+% % fprintf('  --------------------------------------\n'); 
+% fprintf('  STEP3 - DecodeConnectivity  : %f (%f%%)\n',s(4),s(4)/sSum*100);
+% % fprintf('  --------------------------------------\n'); 
+% % fprintf('    DelaunayTriangulation     : %f (%f%%)\n',e(1),e(1)/eSum*100);
+% % fprintf('    Preallowcate              : %f (%f%%)\n',e(2),e(2)/eSum*100);
+% % fprintf('    DeterminateStructure      : %f (%f%%)\n',e(3),e(3)/eSum*100);
+% % fprintf('    IndeterminateStructure    : %f (%f%%)\n',e(4),e(4)/eSum*100); 
+% % fprintf('  --------------------------------------\n'); 
+% 
+% fprintf('  STEP4 - DecodeCrossSection  : %f (%f%%)\n',s(5),s(5)/sSum*100);
+% fprintf('  STEP5 - BuildMember         : %f (%f%%)\n',s(6),s(6)/sSum*100);
 % pause
-% 
-% % rawMember=zeros(noTri*3,2);
-% % for i=1:noTri
-% %     temp(1)=tri(i,1);temp(2)=tri(i,2);
-% %     rawMember(i*3-2,1)=min(temp);
-% %     rawMember(i*3-2,2)=max(temp);
-% %     
-% %     temp(1)=tri(i,2);temp(2)=tri(i,3);
-% %     rawMember(i*3-1,1)=min(temp);
-% %     rawMember(i*3-1,2)=max(temp);
-% %     
-% %     temp(1)=tri(i,3);temp(2)=tri(i,1);
-% %     rawMember(i*3,1)=min(temp);
-% %     rawMember(i*3,2)=max(temp);
-% % end
-% 
-% %Indeterminate Structure
-% rawMember=unique(rawMember,'rows');
-% noMember=length(rawMember(:,1));
-% 
-% %STEP3 - DecodeCrossSection
-% member=zeros(noMember,4);
-% for i=1:noMember
-% %     [pri1 sec1]=getSectionData(Raw(ad(rawMember(i,1))),Raw(ad(rawMember(i,2))));
-% %     [pri2 sec2]=getSectionData(Raw(ad(rawMember(i,2))),Raw(ad(rawMember(i,1))));
-% 
-%     pri1 = 0.8; pri2=0.7;
-%     sec1 = 20; sec2 = 25;
-%     
-%     member(i,1)=rawMember(i,1);
-%     member(i,2)=rawMember(i,2);
-%     if pri1>pri2
-%         member(i,3)=PRB.dv.crossSection(round(sec1),1);
-%         member(i,4)=PRB.dv.crossSection(round(sec1),2);
-%     else
-%         member(i,3)=PRB.dv.crossSection(round(sec2),1);
-%         member(i,4)=PRB.dv.crossSection(round(sec2),2);
-%     end
-% end
-% % member
-% % pause
-end
-function [pri index] = getSectionData(fromNode,toNode)
-%     fromNode.crossSection
-%     toNode.crossSection
-%     pause
-    pri = 0.8;
-    index = 20;
-end
-function [pri index] = getPriority(node1,node2,node,FixData,FreeData,adap)
-    global noFixNode;
-    global noSection;
-    angle=getAngle(node(node1,:),node(node2,:));
-    sIndex=ceil(angle*noSection/360);
-    if node1<=noFixNode
-        index=FixData(node1,sIndex);
-        pri=FixData(node1,sIndex+noSection);
-    else
-        index=FreeData(adap(node1-noFixNode),3+sIndex);
-        pri=FreeData(adap(node1-noFixNode),3+sIndex+noSection);
-    end
-end
-function [angle]=getAngle(node1,node2)
-    tX=node2(1)-node1(1);
-    tY=node2(2)-node1(2);
-    if node1(1)<node2(1)&&node1(2)<node2(2)
-        %#1
-        angle=90-radtodeg(cart2pol(tX,tY));
-    elseif node1(1)<=node2(1)&&node1(2)>=node2(2)
-        %#2
-        angle=90-radtodeg(cart2pol(tX,tY));
-    elseif node1(1)>node2(1)&&node1(2)>node2(2)
-        %#3
-        angle=90-radtodeg(cart2pol(tX,tY));
-    else
-        %#4
-        angle=450-radtodeg(cart2pol(tX,tY));
-    end
-    if isnan(angle)
-        angle=360;
-    end
 end

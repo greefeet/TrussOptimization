@@ -188,8 +188,9 @@ noVar=NOF.FixNode*(noCrossSectionZone + noIndeterminateSet)+NOF.FreeNode*(noNode
 fprintf('         = %d\n',noVar);
 
 %Initialization %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-verifyOpenSees();                               % Verify OpenSees
-displayInitial(lengthX,lengthY);                % Display Initial
+warning('off','MATLAB:delaunay:DupPtsDelaunayWarnId');  % FixDelaunayWarn
+verifyOpenSees();                                       % Verify OpenSees
+displayInitial(lengthX,lengthY);                        % Display Initial
 
 %Wait %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('\nPress any key to Start...\n');       pause
@@ -199,6 +200,8 @@ function displayInitial(lengthX,lengthY)
 %Global Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global PRB;                     % From Problem's Function
 global lineX; global lineY;     % To Truss2Drun Function
+global showDetail;              % For HelpDraw
+showDetail = 0;
 close all;						% Close all Figures
 ss = get(0,'ScreenSize');		% Get ScreenSize
 % Set Position of Each Figure

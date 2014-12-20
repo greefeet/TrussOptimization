@@ -1,5 +1,5 @@
 function Truss2Drun(gen,indi,Method,statistic)
-global PRB; global NOF; global save_folder;
+global PRB; global NOF; global save_folder; global showDetail;
 dv = PRB.dv;
 bc = PRB.bc;
 

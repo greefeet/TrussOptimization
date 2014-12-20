@@ -128,11 +128,11 @@ function [stress disX disY] = sa_results
     
 end
 function [fitness penalty weight] = getFitness(node,member)
+    global showDetail;
     global NOF;
     global PRB;
     mp = PRB.mp;    %Material Properties
     prob = PRB.info.prob;
-    showDetail = 1; 
     
     sa_run(node,member);                %Run OpenSees
     [stress disX disY]=sa_results;      %Get Results
@@ -237,7 +237,7 @@ fitness=fitness+penalLength+penalStress+penalSlenderness+penalDis;
 penalty=fitness-weight;
 
 % showDetail=1;
-% if showDetail==1 
+if showDetail==1 
 %     fprintf('\nShowDettail\n');
     set(0,'CurrentFigure',4);
     if inStability==1
@@ -260,7 +260,7 @@ penalty=fitness-weight;
     else
         fprintf('\nInstability\n');
     end
-% end
+end
 
 
 % fprintf('Test\n');
