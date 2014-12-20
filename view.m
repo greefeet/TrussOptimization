@@ -1,23 +1,16 @@
 function view
 global fitnessLabel; global isSave;
 
-% GitHub
-
-% Load
+% Load FROM workspace
 Method = evalin('base','Method');
 Running = evalin('base','Running');
 Solution = evalin('base','Solution');
-
-% PRB.info.prob = 'ProbCaseI';
-% PRB.info.Label = 'Weight (kg)';
-% PRB.info.name = 'Truss2D 70m span problem by Shrestha and Ghaboussi (caseI)';
 
 % Initial
 prob=Solution.prob;
 func=Solution.func;
 bestindi=Solution.indi;
 gen=Running.gen;
-
 
 feval(prob);                   % Load Problem
 feval(strcat(func,'encode'));  % Set Upper and Lower Limit
