@@ -1,5 +1,6 @@
 function [statistic]=collectStatistic(func,Method,f0,bestindi,statistic,gen)
-global fitnessLabel; global save_folder; global prob;
+global save_folder;   global PRB;
+fitnessLabel = PRB.info.Label;
 sMedian=median(f0); sMode=mode(f0); sMin=min(f0);
 statistic.stat=[statistic.stat;sMedian sMode  sMin];
 
@@ -42,7 +43,7 @@ saveas(2,fullFileName, 'png')
 
 %Save Data
 Solution.func=func;
-Solution.prob=prob;
+Solution.prob=PRB.info.prob;
 Solution.indi=bestindi;
 Running.gen=gen;
 Running.stat=statistic.stat;

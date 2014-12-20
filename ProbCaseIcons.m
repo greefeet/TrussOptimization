@@ -74,7 +74,7 @@ switch type
         % Node Displacement
         % dat1 is displacement
         displacementAllowable=7;
-        if abs(dat1)>displacementAllowable
+        if  abs(dat1) - displacementAllowable > 0.00001
             result=1;
         end
         scale=abs(dat1)/displacementAllowable;

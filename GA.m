@@ -37,14 +37,14 @@ for iter=1:nloop
 
     % Display and Save
     x0 = bin2real(pop0,a,b);
-    [bestfit,nmin]=min(f0);  
-    
+    [bestfit,nmin]=min(f0);
+
     % Display Statistic
     [statistic]=collectStatistic(func,Method,f0,x0(:,nmin),statistic,iter);
-    
+
     % Post Process
     feval(strcat(func,'run'),iter,x0(:,nmin),Method,statistic);
-    
+
     fprintf('  %3d-Best is %d ',iter,bestfit);
     displayEstimate(toc,nloop,2,iter);
     pause(0.0001);

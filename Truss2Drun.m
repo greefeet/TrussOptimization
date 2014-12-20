@@ -1,10 +1,15 @@
 function Truss2Drun(gen,indi,Method,statistic)
-global PRB; global NOF; global save_folder; global showDetail;
+global PRB;         %FROM PROBLEM
+global NOF;         %FROM ENCODE
+
+global isSave;      %FROM VIEW
+global save_folder; %FROM START
+global showDetail;
+
 dv = PRB.dv;
 bc = PRB.bc;
 
-isSave = 1;
-noFixNode = NOF.FixNode; 
+noFixNode = NOF.FixNode;
 global lineX; global lineY;
 
 % Draw Structure
@@ -52,10 +57,10 @@ xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f kg\n%s, Population''s size %d',
 
 
 
-showDetail=1;
+%showDetail=1;
 feval('Truss2D',indi);
 pause(0.0001);
-showDetail=0;
+%showDetail=0;
 
 if isSave==1
 name=sprintf('gen-%3.0f.png',gen);
