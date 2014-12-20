@@ -201,7 +201,10 @@ function displayInitial(lengthX,lengthY)
 global PRB;                     % From Problem's Function
 global lineX; global lineY;     % To Truss2Drun Function
 global showDetail;              % For HelpDraw
-showDetail = 0;
+showDetail = 0;                 % Set Initial FOR Binary and CalFitness
+
+global isSave;                  % For Truss2Drun save figure
+isSave=1;                       % Set Initial FOR Truss2Drun save picture
 close all;						% Close all Figures
 ss = get(0,'ScreenSize');		% Get ScreenSize
 % Set Position of Each Figure
