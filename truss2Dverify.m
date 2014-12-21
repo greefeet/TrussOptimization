@@ -8,7 +8,7 @@ prob = PRB.info.prob;
 fprintf('[Validate Results]\n');
 fitness=truss2D(indi);
 fprintf('     fitness: %.0f\n',fitness);
-[node member] = truss2Ddecode(indi);
+[node member] = Truss2Ddecode(indi);
 numberMember=length(member(:,1));
 numberNode=length(node(:,1));
 no=length(bc.fix(:,1));
