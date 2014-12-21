@@ -1,8 +1,9 @@
 function [bin,x,f] = initialBinary(fun,nvar,nbit,nsol,a,b)
-%Randomly initiate the population, design variables 
+%Randomly initiate the population, design variables
 % nvar=no. of variables
 % nbit is the number of cell in each variable
 % nsol is a number of gene
+rng('shuffle');
 bin = round(rand(nvar*nbit,nsol));
 for i=1:nsol
     for j=1:nvar
@@ -10,7 +11,7 @@ for i=1:nsol
         x(j,i)=bin2dec(binn,a(j),b(j));
     end
     f(i)=feval(fun,x(:,i));
-%     clc 
+%     clc
     fprintf('[InitialBinary] %d/%d\n',i,nsol);
 end
 end
