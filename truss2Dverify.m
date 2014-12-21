@@ -1,9 +1,9 @@
-function truss2Dverify(indi)
+function Truss2Dverify(indi)
 global PRB;
 bc =  PRB.bc;
 dv = PRB.dv;
 mp = PRB.mp;
-prob = PRB.info.prob; 
+prob = PRB.info.prob;
 
 fprintf('[Validate Results]\n');
 fitness=truss2D(indi);
@@ -69,7 +69,7 @@ for i=1:numberMember
     fprintf('      Stress      : %12.2f ',stress(i));
     weight=weight+tLength*mp.density*member(i,3);
     checkMember(i)=true;
-    
+
     % Check Stress
     [passed scale allowable]=feval(strcat(prob,'cons'),2,stress(i),tLength,member(i,4));
     fprintf('(allow: %.0f) ',allowable);
@@ -80,7 +80,7 @@ for i=1:numberMember
         fprintf('Pass\n');
         countPass=countPass+1;
     end
-    
+
     % Check slendernessRatio
     slendernessRatio=tLength/member(i,4);
     fprintf('      Slenderness : %12.2f ',slendernessRatio);
@@ -122,7 +122,7 @@ fprintf('   Weight : %7.0f\n',weight);
 fprintf('   fitness: %7.0f\n\n',fitness);
 if NeedPass>countPass
     fprintf('   Validation Error\n');
-    fprintf('   Fail %d case\n',NeedPass-countPass);   
+    fprintf('   Fail %d case\n',NeedPass-countPass);
 else
     fprintf('   Validation complete\n');
 end
@@ -161,7 +161,7 @@ if noGroup==1
     else
         result=-100;
     end
-    
+
 else
     result=-100;
 end
@@ -218,7 +218,7 @@ else
                     complete=true;
                     return;
                 end
-            end       
+            end
         end
     end
     end
@@ -229,8 +229,8 @@ function result = sa(node,member)
 %Structure Analysis by OpenSees
     global PRB;
     mp = PRB.mp;
-    bc = PRB.bc; 
-    
+    bc = PRB.bc;
+
     %Clear OutputFile
     fid = fopen('File-OutStress.out', 'w');
     fprintf(fid,'');
@@ -241,13 +241,13 @@ function result = sa(node,member)
     fid = fopen('File-OutDisp.out', 'w');
     fprintf(fid,'');
     fclose(fid);
-    
+
     %Write InputFile
     %initial data
     fileID = fopen('File-Input.tcl','w');
     fprintf(fileID,'wipe\n');
     fprintf(fileID,'model BasicBuilder -ndm 2 -ndf 2\n');
-    
+
     %loop node
     numberNode=length(node(:,1));
     for i=1:numberNode
@@ -265,11 +265,11 @@ function result = sa(node,member)
     for i=1:numberMember
         fprintf(fileID,'element truss %d %d %d %.0f 1\n',i,member(i,1),member(i,2),member(i,3));
     end
-    
+
     %load
 %     fprintf(fileID,'timeSeries Linear 1\n');
     fprintf(fileID,'pattern Plain 1 "Linear" {\n');
-    
+
     %loop Load
     numberLoad=length(bc.load(:,1));
     for i=1:numberLoad
@@ -297,8 +297,8 @@ function result = sa(node,member)
     fprintf(fileID,'analyze 1\n');
     fprintf(fileID,'quit\n');
     fclose(fileID);
-    
-    
+
+
     %run OpenSees
     [~,sout]=system('OpenSees.exe File-Input.tcl');
 %     sout
@@ -348,7 +348,7 @@ maxA=max(crossSection);
 minA=min(crossSection);
 for i=1:no
     lw=1+4*(element(i,3)-minA)/(maxA-minA);
-    
+
     plot(node(element(i,1:2),1),node(element(i,1:2),2),'-black','LineWidth',lw);
 end
 
@@ -362,7 +362,7 @@ for i=1:no
     plot(draw(element(i,1:2),1),draw(element(i,1:2),2),line,'LineWidth',lw);
 end
 % nodeFree=node;
-% if ~isempty(nodeFree) 
+% if ~isempty(nodeFree)
 % plot(nodeFree(:,1),nodeFree(:,2),'mo','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','yellow','MarkerSize',7);
 % end
 plot(node(fix(:,1),1),node(fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
@@ -381,7 +381,7 @@ end
 for i=1:no
     nowX=(node(element(i,1),1)+node(element(i,2),1))/2;
     nowY=(node(element(i,1),2)+node(element(i,2),2))/2;
-    
+
     if checkMember(i)==true
         ttColor='yellow';
     else
@@ -428,7 +428,7 @@ for i=1:no
     elseif length(intersect(element(i,1:2),group{6}))>1
         color='-yellow';
     end
-    
+
     plot(node(element(i,1:2),1),node(element(i,1:2),2),color,'LineWidth',lw);
 end
 
