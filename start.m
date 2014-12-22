@@ -5,7 +5,7 @@ function start
 prob = 'ProbCaseI';
 method = 'GA';
 nloop = 500;
-nsol = 500;
+nsol = 5;
 
 %Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('[Problem] %s\n',prob);

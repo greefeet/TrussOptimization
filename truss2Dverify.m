@@ -6,7 +6,7 @@ mp = PRB.mp;
 prob = PRB.info.prob;
 
 fprintf('[Validate Results]\n');
-fitness=truss2D(indi);
+fitness=Truss2D(indi);
 fprintf('     fitness: %.0f\n',fitness);
 [node member] = Truss2Ddecode(indi);
 numberMember=length(member(:,1));

@@ -57,10 +57,10 @@ xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f kg\n%s, Population''s size %d',
 
 
 
-%showDetail=1;
+showDetail=1;
 feval('Truss2D',indi);
 pause(0.0001);
-%showDetail=0;
+showDetail=0;
 
 if isSave==1
 name=sprintf('gen-%3.0f.png',gen);
