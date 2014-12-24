@@ -15,7 +15,7 @@ fprintf('[NOF.Generations] %d\n',nloop);
 fprintf('[ResultFolder] %s\n',resultFolder(prob,method));
 
 [func] = feval(strcat(prob));           % Load Problem
-[a b]=feval(strcat(func,'encode'));     % Set Upper and Lower Limit
+[a,b]=feval(strcat(func,'encode'));     % Set Upper and Lower Limit
 feval(method,func,a,b,nloop,nsol);      % Start Optimization
 
 end

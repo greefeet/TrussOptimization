@@ -8,18 +8,18 @@ function result = sa_run(node,member)
     global PRB;
     mp = PRB.mp;    %Material Properties
     bc = PRB.bc;    %Boundary Condition
-    
+
     %Clear OutputFile
 %     %V1--------------
-%     [fid mess] = fopen('File-OutStress.out', 'w'); 
+%     [fid mess] = fopen('File-OutStress.out', 'w');
 %     if ~isempty(mess)
 %         fprintf('\nMESSAGE : %s\n',mess);
 %         fprintf('\nfid : %s\n',fid);
 %     end
 %     fprintf(fid,'');
-%     fclose(fid); 
-%     
-%     [fid] = fopen('File-OutDisp.out', 'w'); 
+%     fclose(fid);
+%
+%     [fid] = fopen('File-OutDisp.out', 'w');
 %     fprintf(fid,'' );
 %     fclose(fid);
 
@@ -30,23 +30,23 @@ function result = sa_run(node,member)
     [fid mess] = fopen('File-OutStress.out', 'w');
     while fid<0
         fprintf('ERROR : %s\n',mess);
-        [fid mess] = fopen('File-OutStress.out', 'w'); 
+        [fid mess] = fopen('File-OutStress.out', 'w');
     end
     fclose(fid);
-    
+
     [fid mess] = fopen('File-OutDisp.out', 'w');
     while fid<0
         fprintf('ERROR : %s\n',mess);
-        [fid mess] = fopen('File-OutDisp.out', 'w'); 
+        [fid mess] = fopen('File-OutDisp.out', 'w');
     end
     fclose(fid);
-    
+
     %Write InputFile
     %initial data
     fileID = fopen('File-Input.tcl','w');
     fprintf(fileID,'wipe\n');
     fprintf(fileID,'model BasicBuilder -ndm 2 -ndf 2\n');
-    
+
     %loop node
     numberNode=length(node(:,1));
     for i=1:numberNode
@@ -64,10 +64,10 @@ function result = sa_run(node,member)
     for i=1:numberMember
         fprintf(fileID,'element truss %d %d %d %d 1\n',i,member(i,1),member(i,2),member(i,3));
     end
-    
+
     %load
     fprintf(fileID,'pattern Plain 1 "Linear" {\n');
-    
+
     %loop Load
     numberLoad=length(bc.load(:,1));
     for i=1:numberLoad
@@ -91,10 +91,10 @@ function result = sa_run(node,member)
     fprintf(fileID,'analyze 1\n');
     fprintf(fileID,'quit\n');
     fclose(fileID);
-    
+
     %run OpenSees
     [~,sout]=system('OpenSeesHelper.exe File-Input.tcl');
-    
+
     if isempty(strfind(sout,'analyze failed'))
         result = true;
     else
@@ -102,16 +102,11 @@ function result = sa_run(node,member)
     end
 end
 function [stress disX disY] = sa_results
-
     % Load Stress
     fid = fopen('File-OutStress.out');
     stress = fscanf(fid, '%f ');
     str=fscanf(fid,'%s');
     fclose(fid);
-    if ~isempty(strfind(str,'#'))
-        [~,sout]=system('OpenSeesHelper.exe File-Input.tcl');
-        [stress,disX,disY] = sa_results;
-    end 
 
     % Load Displacement
     fid = fopen('File-OutDisp.out');
@@ -120,12 +115,23 @@ function [stress disX disY] = sa_results
     disX=displacement(1:2:numberNode);
     disY=displacement(2:2:numberNode);
     fclose(fid);
-    
-    while numel(disX)==0
+
+    % Delay Temporary Fix Load Output
+    order = 1;
+    while (numel(disX)==0 || ~isempty(strfind(str,'#'))) && order < 10
+        order = order + 1;
+        pause(0.01);
         [~,sout]=system('OpenSeesHelper.exe File-Input.tcl');
         [stress,disX,disY] = sa_results;
     end
-    
+
+    % Delay Temporary Fix Load Stress
+    if ~isempty(strfind(str,'#')) || numel(disX)==0
+        stress = [];
+        disX = [];
+        disY = [];
+    end
+
 end
 function [fitness penalty weight] = getFitness(node,member)
     global showDetail;
@@ -133,13 +139,13 @@ function [fitness penalty weight] = getFitness(node,member)
     global PRB;
     mp = PRB.mp;    %Material Properties
     prob = PRB.info.prob;
-    
+
     sa_run(node,member);                %Run OpenSees
     [stress disX disY]=sa_results;      %Get Results
-    
+
     noNode=length(node(:,1));
     noMember=length(member(:,1));
-    
+
     %Calculate Weight
     weight=0;
     for i=1:noMember
@@ -148,23 +154,23 @@ function [fitness penalty weight] = getFitness(node,member)
         tLength=sqrt(tX+tY);
         weight=weight+tLength*mp.density*member(i,3);
     end
-    
+
     clength=0;
     cstress=0;
     cslender=0;
     cdis=0;
-    
+
     penalLength=0;
     penalStress=0;
     penalSlenderness=0;
     penalDis=0;
-    
+
     pLength=1/noMember*weight;
     pStress=1/noMember*weight;
     pSlender=1/noMember*weight;
     pDis=1/noNode/2*weight;
     penalty=0;
-    
+
     % Constraints Details
     if showDetail==1
         barMemberLength=zeros(noMember,1);
@@ -184,34 +190,34 @@ if ~isempty(stress)
         penalLength=penalLength+scale*pLength*passed;
         clength=clength+passed;
         barMemberLength(i)=scale;
-        
+
         % Check Allowable stress
         [passed scale]=feval(strcat(prob,'cons'),2,stress(i),tLength,member(i,4));
         penalStress=penalStress+scale*pStress*passed;
         cstress=cstress+passed;
         barMemberStress(i)=scale;
-        
+
         % Slenderness Ratio
         [passed scale]=feval(strcat(prob,'cons'),3,stress(i),tLength,member(i,4));
         penalSlenderness=penalSlenderness+scale*pSlender*passed;
         cslender=cslender+passed;
         barMemberSlender(i)=scale;
     end
-    
+
     for i=1:noNode
         % x Displacement
         [passed scale]=feval(strcat(prob,'cons'),4,disX(i));
         penalDis=penalDis+scale*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,1)=scale;
-        
+
         % y Displacement
         [passed scale]=feval(strcat(prob,'cons'),4,disY(i));
         penalDis=penalDis+scale*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,2)=scale;
     end
-    
+
 else
     NOF.Instability = NOF.Instability + 1;
     fprintf('\nInStability :  %d\n',NOF.Instability);
@@ -221,11 +227,11 @@ else
         tX=(node(member(i,1),1)-node(member(i,2),1))^2;
         tY=(node(member(i,1),2)-node(member(i,2),2))^2;
         tLength=sqrt(tX+tY);
-        
+
         % Member Length
         [passed scale]=feval(strcat(prob,'cons'),1,tLength);
         penalLength=penalLength+scale*pLength*passed;
-        clength=clength+passed;  
+        clength=clength+passed;
     end
     cstress=noMember;
     cslender=noMember;
@@ -237,7 +243,7 @@ fitness=fitness+penalLength+penalStress+penalSlenderness+penalDis;
 penalty=fitness-weight;
 
 % showDetail=1;
-if showDetail==1 
+if showDetail==1
 %     fprintf('\nShowDettail\n');
     set(0,'CurrentFigure',4);
     if inStability==1
