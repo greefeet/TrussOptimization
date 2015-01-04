@@ -1,4 +1,4 @@
-function func = ProbCaseI
+function func=ProbCaseI
 %ProbCaseI Truss2D 70m span problem by Shrestha and Ghaboussi (caseI)
 
 %Global Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,7 +10,7 @@ func = 'Truss2D';
 %Information %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PRB.info.prob = 'ProbCaseI';
 PRB.info.Label = 'Weight (kg)';
-PRB.info.name = 'Truss 70m span problem by Shrestha and Ghaboussi (caseI)';
+PRB.info.name = 'Truss2D 70m span problem by Shrestha and Ghaboussi (caseI)';
 
 %Material Properties (mp) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PRB.mp.elastic = 20100000;    % modulus of elastic (Newton/cm^2)

@@ -1,4 +1,5 @@
 function Truss2Dverify(indi)
+%Truss2Dverify %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global PRB;
 bc =  PRB.bc;
 dv = PRB.dv;
@@ -8,7 +9,9 @@ prob = PRB.info.prob;
 fprintf('[Validate Results]\n');
 fitness=Truss2D(indi);
 fprintf('     fitness: %.0f\n',fitness);
-[node member] = Truss2Ddecode(indi);
+
+%Transform RAW Data to Truss Structure %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[node, member] = Truss2Ddecode(indi);
 numberMember=length(member(:,1));
 numberNode=length(node(:,1));
 no=length(bc.fix(:,1));
@@ -16,11 +19,12 @@ r=0;
 for i=1:no
     r=r+bc.fix(i,2)+bc.fix(i,3);
 end
-j=numberNode;
 fprintf('[Detail]\n');
 fprintf('        node: %d\n',numberNode);
 fprintf('      member: %d\n',numberMember);
 fprintf('[Stability]\n');
+
+%Check b+r>=2*j %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('    b+r>=2*j: ');
 gB=numberMember;
 gJ=numberNode;
@@ -34,8 +38,9 @@ else
     fprintf('NotPass\n');
 end
 
+%Check Stability %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('    GroupSt.: ');
-[result group]=validateStability(node,member);
+[result, group]=validateStability(node,member);
 region=[dv.xMin dv.xMax dv.yMin dv.yMax];
 if result > 0
     fprintf('Pass\n');
@@ -45,9 +50,10 @@ else
     return;
 end
 
+%Structure Analysis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('[Structural Analysis] ');
 sa(node,member);
-[stress disX disY]=sa_results;
+[stress, disX, disY]=sa_results;
 if ~isempty(stress)
     fprintf('AnalysisComplete\n');
 else
@@ -55,6 +61,7 @@ else
     return;
 end
 
+%Check Member Constraints %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 countPass=0;
 weight=0;
 checkMember=1:numberMember;
@@ -71,7 +78,7 @@ for i=1:numberMember
     checkMember(i)=true;
 
     % Check Stress
-    [passed scale allowable]=feval(strcat(prob,'cons'),2,stress(i),tLength,member(i,4));
+    [passed, ~, allowable]=feval(strcat(prob,'cons'),2,stress(i),tLength,member(i,4));
     fprintf('(allow: %.0f) ',allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -84,7 +91,7 @@ for i=1:numberMember
     % Check slendernessRatio
     slendernessRatio=tLength/member(i,4);
     fprintf('      Slenderness : %12.2f ',slendernessRatio);
-    [passed scale allowable]=feval(strcat(prob,'cons'),3,stress(i),tLength,member(i,4));
+    [passed, ~, allowable]=feval(strcat(prob,'cons'),3,stress(i),tLength,member(i,4));
     fprintf('(allow: %.0f) ',allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -95,10 +102,12 @@ for i=1:numberMember
     end
     fprintf('\n');
 end
+
+%Check Node Constraints %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for i=1:numberNode
     % Check Displacement
     fprintf('   Node%d\n',i);
-    [passed scale allowable]=feval(strcat(prob,'cons'),4,disX(i));
+    [passed , ~, allowable]=feval(strcat(prob,'cons'),4,disX(i));
     fprintf('      coorX : %8.1f, disX : %6.2f (allow: +-%d) ',node(i,1),disX(i),allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -106,7 +115,7 @@ for i=1:numberNode
         fprintf('Pass\n');
         countPass=countPass+1;
     end
-    [passed scale allowable]=feval(strcat(prob,'cons'),4,disY(i));
+    [passed , ~, allowable]=feval(strcat(prob,'cons'),4,disY(i));
     fprintf('      coorY : %8.1f, disY : %6.2f (allow: +-%d) ',node(i,2),disY(i),allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -128,11 +137,12 @@ else
 end
 set(0,'CurrentFigure',3);
 displacement=[disX disY];
-plotDis2D(node,displacement,stress,bc.load,bc.fix,region,member,dv.crossSection,checkMember);
 
+%Display Structure %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotDis2D(node,displacement,stress,bc.load,bc.fix,region,member,dv.crossSection,checkMember);
 end
 
-function [result Group] = validateStability(node,member)
+function [result, Group] = validateStability(~,member)
 global PRB;
 bc = PRB.bc;
 numberMember=size(member);
@@ -143,7 +153,7 @@ for i=1:numberMember
 end
 
 while true
-    [loop Group]=checkGroup(Group);
+    [loop, Group]=checkGroup(Group);
     if loop==false
         break;
     end
@@ -166,7 +176,7 @@ else
     result=-100;
 end
 end
-function [complete Group]=checkGroup(Group)
+function [complete, Group]=checkGroup(Group)
 noGroup=length(Group);
 if noGroup<2
     complete=false;
@@ -235,9 +245,6 @@ function result = sa(node,member)
     fid = fopen('File-OutStress.out', 'w');
     fprintf(fid,'');
     fclose(fid);
-%     fid = fopen('File-OutForces.out', 'w');
-%     fprintf(fid,'');
-%     fclose(fid);
     fid = fopen('File-OutDisp.out', 'w');
     fprintf(fid,'');
     fclose(fid);
@@ -267,7 +274,6 @@ function result = sa(node,member)
     end
 
     %load
-%     fprintf(fileID,'timeSeries Linear 1\n');
     fprintf(fileID,'pattern Plain 1 "Linear" {\n');
 
     %loop Load
@@ -279,7 +285,6 @@ function result = sa(node,member)
 
     %final data
     fprintf(fileID,'system SparseGEN\n');
-%     fprintf(fileID,'system BandSPD\n');
     fprintf(fileID,'numberer RCM\n');
     fprintf(fileID,'constraints Plain\n');
     fprintf(fileID,'integrator LoadControl 1.0\n');
@@ -291,9 +296,6 @@ function result = sa(node,member)
     fprintf(fileID,'recorder Element -file File-OutStress.out -ele ');
     fprintf(fileID,'%d ',1:numberMember);
     fprintf(fileID,'material stress\n');
-%     fprintf(fileID,'recorder Element -file File-OutForces.out -ele ');
-%     fprintf(fileID,'%d ',1:numberMember);
-%     fprintf(fileID,'basicForces\n');
     fprintf(fileID,'analyze 1\n');
     fprintf(fileID,'quit\n');
     fclose(fileID);
@@ -301,7 +303,6 @@ function result = sa(node,member)
 
     %run OpenSees
     [~,sout]=system('OpenSees.exe File-Input.tcl');
-%     sout
 
     if isempty(strfind(sout,'analyze failed'))
         result = true;
@@ -309,7 +310,7 @@ function result = sa(node,member)
         result = false;
     end
 end
-function [stress disX disY] = sa_results
+function [stress, disX, disY] = sa_results
 
     % Load Stress
     fid = fopen('File-OutStress.out');
@@ -333,7 +334,6 @@ function [h]=plotDis2D(node,displacement,stress,load,fix,region,element,crossSec
 clf
 global PRB;
 hold on
-% grid on
 daspect([1 1 1]); xlabel('x');ylabel('y');zlabel('z');
 
 maxDis=max(abs(displacement));
@@ -361,16 +361,13 @@ for i=1:no
     end
     plot(draw(element(i,1:2),1),draw(element(i,1:2),2),line,'LineWidth',lw);
 end
-% nodeFree=node;
-% if ~isempty(nodeFree)
-% plot(nodeFree(:,1),nodeFree(:,2),'mo','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','yellow','MarkerSize',7);
-% end
+
 plot(node(fix(:,1),1),node(fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
 h=plot(node(load(:,1),1),node(load(:,1),2),'mV','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','red','MarkerSize',7);
 for i=1:length(node)
     tt=sprintf('%d',i);
-    [passedX XX EE]=feval(strcat(PRB.info.prob,'cons'),4,displacement(i,1));
-    [passedY XX EE]=feval(strcat(PRB.info.prob,'cons'),4,displacement(i,2));
+    [passedX, ~, ~]=feval(strcat(PRB.info.prob,'cons'),4,displacement(i,1));
+    [passedY, ~, ~]=feval(strcat(PRB.info.prob,'cons'),4,displacement(i,2));
     if passedX ~=0 || passedY ~= 0
         color=[.9 .9 .7];
     else
@@ -405,7 +402,6 @@ function [h]=drawGroup(node,group,load,fix,region,element,crossSection)
 % plot Input - Node Support Element Load
 clf
 hold on
-% grid on
 daspect([1 1 1]); xlabel('x');ylabel('y');zlabel('z');
 
 no=size(element);
@@ -437,11 +433,9 @@ noGroup=length(group);
 fprintf('\n[StabilityDetail]\n');
 for i=1:noGroup
     fprintf('Group : %d\n',i);
-%     group{i}
     noMember=length(group{i});
     for j=1:noMember-1
         fprintf('   %2d-%2d (%2d-%2d) (%d,%d)-(%d,%d)\n',j,j+1,group{i}(j),group{i}(j+1),node(group{i}(j),1),node(group{i}(j),2),node(group{i}(j+1),1),node(group{i}(j+1),2));
-%         plot(node(group{i}(j:j+1),1),node(group{i}(j:j+1),2),'-black','LineWidth',2);
     end
 end
 
@@ -457,11 +451,9 @@ numberNode=numberNode(1);
 startFee=numberFix+numberLoad;
 
 plot(node(startFee+1:numberNode,1),node(startFee+1:numberNode,2),'mO','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','yellow','MarkerSize',7);
-% ttt=startFee+1:1:numberNode
 for i=1:numberNode
     text(node(i,1)+50,node(i,2)+50,sprintf('%d',i));
 end
-% text(node(startFee+1:numberNode,1)+50,node(startFee+1:numberNode,2)+50,sprintf('%d',ttt))
 
 height=region(4)-region(3);
 height=height*0.7;

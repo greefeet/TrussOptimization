@@ -1,10 +1,11 @@
-function [a b] = Truss2Dencode
-%Truss2Dencode Declare Varaibles and Set Upper and Lower Limit
+function [a,b] = Truss2Dencode
+%Truss2Dencode Declare Global Varaibles and Set Upper and Lower Limit
 
-%Encode VERSION 2.0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Encode PATTERN %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Applied Delaunay Triangulation : Determinate and Indeterminate Structure
 
-%     DesignVariable = [FixNodeSet FreeNodeSet]
+% DesignVariable = [FixNodeSet FreeNodeSet]
+% By
 % a is LowerBoundary = [a1 a2]
 % b is UpperBoundary = [b1 b2]
 
@@ -94,15 +95,15 @@ fprintf('\n[EncodeProblem] %s\n',PRB.info.name);
 fprintf('[Formulation] Applied Delauney Triangulation\n');
 
 %Set Instability Counter
-NOF.Instability = 0;
+NOF.Instability = 0;    % To truss2D.m for Counting Instability Structure
 
-%Define No. of Section and Layer
+%Define No. of Section and Layer %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 NOF.Section=8;
 NOF.SectionLayer=3;
 NOF.IndeterminateLayer=3;
 
-%Set CoupleVariables
-%Section
+%Setup Upper and Lower Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CrossSection
 switch PRB.dv.TypeSection
     case TypeSection.Discrete
         lowCrossSection = 1;
@@ -140,8 +141,7 @@ for i=1:NOF.FixNode
     b1(NOF.EachFixNode*(i-1)+1:1:NOF.EachFixNode*i)=[upperCrossSectionSet upperIndeterminateSet];
 end
 
-%FreeNodeSet;
-%Estimate No. of freeNode from totalArea and minArea
+%Estimate No. of freeNode from totalArea and minArea %%%%%%%%%%%%%%%%%%%%%%
 %Calculate minArea from 3 min sides
 p=(PRB.dv.lengthMin*3)/2;
 minArea=sqrt(p*(p-PRB.dv.lengthMin)^3);
@@ -220,7 +220,6 @@ ylim([0 500000]);
 set(0,'CurrentFigure',2);
 ylim([0 500000]);
 
-
 % Draw Design Space
 set(0,'CurrentFigure',3);
 clf;    hold on;    daspect([1 1 1]);   xlabel('x'); ylabel('y');
@@ -247,7 +246,6 @@ end
 function verifyOpenSees
 opensees=verifyopensees;
 if opensees==0
-	fprintf('ERROR Connection to OpenSees\n')
-	FORCE_STOP;									% Force Terminate
+	fprintf('ERROR Connection to OpenSees\n');  FORCE_STOP;
 end
 end

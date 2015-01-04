@@ -1,7 +1,8 @@
 function view
+%view
 global fitnessLabel; global isSave;
 
-% Load FROM workspace
+% Load FROM workspace %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Method = evalin('base','Method');
 Running = evalin('base','Running');
 Solution = evalin('base','Solution');
@@ -21,7 +22,7 @@ fprintf('[Generation] %d\n',gen);
 f0=feval(func,bestindi);
 fprintf('[Fitness] %d\n',f0);
 
-% Draw Statistic
+% Draw Statistic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cF=[47/255 51/255 59/255];
 cW=[0/255 146/255 146/255];
 cP=[255/255 54/255 0/255];
@@ -35,7 +36,7 @@ xlabel('Generations Number');
 ylabel(fitnessLabel);
 title('Statistic of Population','FontWeight','bold')
 
-% Draw History of Best Individual
+% Draw History of Best Individual %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 set(0,'CurrentFigure',2);
 hold on
 plot(1:gen,Running.hisFitness,'-o','LineWidth',1,'MarkerEdgeColor',cF,'MarkerFaceColor',cF,'MarkerSize',3,'Color',cF);
@@ -46,11 +47,11 @@ xlabel('Generation Number');
 ylabel(fitnessLabel);
 title('Best Individuals in each Generation','FontWeight','bold')
 
-% Run
+% Run %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 isSave=0;
 feval(strcat(func,'run'),gen,bestindi,Method,Running);
 isSave=1;
 
-% Verify
+% Verify %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 feval(strcat(func,'verify'),bestindi);
 end

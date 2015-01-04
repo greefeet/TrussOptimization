@@ -1,14 +1,15 @@
 function [statistic]=collectStatistic(func,Method,f0,bestindi,statistic,gen)
+%collectStatistic
 global save_folder;   global PRB;
 fitnessLabel = PRB.info.Label;
 sMedian=median(f0); sMode=mode(f0); sMin=min(f0);
 statistic.stat=[statistic.stat;sMedian sMode  sMin];
-
-[tfitness tpenal tpurefitness]=feval(func,bestindi);
+[tfitness, tpenal, tpurefitness]=feval(func,bestindi);
 statistic.hisFitness=[statistic.hisFitness; tfitness];
 statistic.hisPenal=[statistic.hisPenal; tpenal];
 statistic.hisPureFitness=[statistic.hisPureFitness; tpurefitness];
 
+% Drawing Setup
 cF=[47/255 51/255 59/255];
 cW=[0/255 146/255 146/255];
 cP=[255/255 54/255 0/255];
@@ -35,13 +36,13 @@ xlabel('Generation Number');
 ylabel(fitnessLabel);
 title('Best Individuals in each Generation','FontWeight','bold')
 
-% Save Figure
+% Save Figure to File
 fullFileName=fullfile(cd,save_folder,'StatisticHistory.png');
 saveas(1,fullFileName, 'png')
 fullFileName=fullfile(cd,save_folder,'BestFitnessHistory.png');
 saveas(2,fullFileName, 'png')
 
-%Save Data
+%Save Data to File
 Solution.func=func;
 Solution.prob=PRB.info.prob;
 Solution.indi=bestindi;

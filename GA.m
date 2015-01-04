@@ -1,12 +1,15 @@
 function GA( func,a,b,nloop,nsol)
+%GA Start Genetic Algorithm
+
 fprintf('Method  : Genetic Algorithms (GA)\n');
 
 % Optimizer's Parameters
-nvar=length(a);     % no. design variables
 nbit=10;            % no. of binary bit for one design variable
 pc=1.0;             % probability of crossover
 pm=0.2;             % mutation probability
 pt=0.05;            % translation probability
+
+nvar=length(a);     % no. design variables
 
 % Collecing
 Method.name='Genetic Algorithms (GA)';
@@ -52,27 +55,23 @@ end
 end
 
 function bin1 = ga_select(bin2,ff)
-%
-% Selection procedure of GA
-%
+%ga_select %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 [m,n]=size(bin2);
-% [ff1,n1]=sort(-ff);
-% bin2=bin2(:,n1);
-[ff1,n1]=sort(-ff);
+bin1 = zeros(m,n);
+[~,n1]=sort(-ff);
 w0(n1)=1:n;
-[ff;w0]';
 w0=w0';
 w1=w0/sum(w0);
 w=cumsum(w1);
-% figure(1),clf,pie(w1)
 for i=1:n
     prob=rand;
     if prob <= w(1)
         bin1(:,i)=bin2(:,1);
     else
         ii=1;
-        while prob > w(ii)|ii < n
-            if prob > w(ii)&prob <= w(ii+1)
+        while prob > w(ii)||ii < n
+            if prob > w(ii)&&prob <= w(ii+1)
                 bin1(:,i)=bin2(:,ii+1);
             end
             ii=ii+1;
@@ -81,11 +80,9 @@ for i=1:n
 end
 end
 function bin1=ga_crossover(bin2,nv,nc,pc)
-%
-% GA crossover operator
-% with pc = 0.9
-%
-[m,n]=size(bin2);
+% ga_crossover %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[~,n]=size(bin2);
 bin1=bin2;
 for i=1:2:n-1
     if rand <= pc% crossover prob.
@@ -100,9 +97,8 @@ for i=1:2:n-1
 end
 end
 function bin1 = ga_mutate(bin2,pm)
-%
 % Mutation operator for simple GA
-%
+
 [m,n]=size(bin2);
 bin1=bin2;
 for i=1:n
@@ -113,13 +109,15 @@ for i=1:n
 end
 end
 function [bin1,f]=ga_translate(fun,bin2,nv,nc,a,b,pt)
-%
+%ga_translate %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % GA Translation operator&new blood
-%
+
 [m,n]=size(bin2);
 newblood=round(rand(m,1));
 nperm = randperm(n);
 bin1=[newblood bin2(:,nperm(2:n))];
+x=zeros(nv,n);
+f=zeros(1,n);
 for i=1:n
     if i > 1
         if rand < pt%translation prob.
@@ -131,16 +129,15 @@ for i=1:n
         x(j,i)=bin2dec(bin1((j-1)*nc+1:j*nc,i),a(j),b(j));
     end
     f(i)=feval(fun,x(:,i));
-%     clc
     fprintf('~%.2f',i/n*100);
 end
 end
 function [x,f]=ga_elite(x1,x2,f1,f2)
-%
+%ga_elite %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % GA Elite strategy
 % keep 1 elite from the old generation and another from the
 % new generation
-[m,n]=size(x1);
+[~,n]=size(x1);
 nperm1=randperm(n);
 nperm2=randperm(n);
 nn1=ceil((n-2)/2);nn2=n-nn1-2;
@@ -152,7 +149,7 @@ x=[xmin1 x1(:,nperm1(1:nn1)) xmin2 x2(:,nperm2(1:nn2))];
 f=[fmin1 f1(:,nperm1(1:nn1)) fmin2 f2(:,nperm2(1:nn2))];
 end
 function x=bin2dec(bin,a,b)
-%
+%bin2dec %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Transformation from binary string to real number
 % with lowr limit a and upper limit b
 n=max(size(bin));
@@ -164,10 +161,10 @@ function x=bin2real(bin,a,b)
 [m,n]=size(bin);
 nvar=length(a);
 nbit=m/nvar;
-
+x=zeros(nvar,n);
 for i=1:n
     for j=1:nvar
-        x(j,i)=bin2dec(bin((j-1)*nbit+1:j*nbit,i),a(j),b(j));
+        x(j,i)= bin2dec(bin((j-1)*nbit+1:j*nbit,i),a(j),b(j));
 	end
 end
 end

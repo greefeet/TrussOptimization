@@ -36,11 +36,11 @@ plot(bc.node(bc.load(:,1),1),bc.node(bc.load(:,1),2),'mV','LineWidth',1,'MarkerE
 %support
 plot(bc.node(bc.fix(:,1),1),bc.node(bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
 
-[node member]=Truss2Ddecode(indi);
+[node, member]=Truss2Ddecode(indi);
 noMember=length(member(:,1));
 maxA=max(dv.crossSection(:,1));
 minA=min(dv.crossSection(:,1));
-% fprintf('noNode : %d\n',length(node(:,1)));
+
 for i=1:noMember
     lw=1+4*(member(i,3)-minA)/(maxA-minA);
     plot(node(member(i,1:2),1),node(member(i,1:2),2),'-black','LineWidth',lw);
@@ -54,7 +54,6 @@ plot(bc.node(bc.fix(:,1),1),bc.node(bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdg
 til=sprintf('Best Individual\n');
 title(til,'FontWeight','bold')
 xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f kg\n%s, Population''s size %d',gen,statistic.hisFitness(gen),Method.name,Method.NoSolver));
-
 
 
 showDetail=1;
