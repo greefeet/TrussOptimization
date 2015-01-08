@@ -169,19 +169,25 @@ if ~isempty(stress)
         tLength=sqrt(tX+tY);
 
         % Member Length
-        [passed, scale]=feval(strcat(prob,'cons'),1,tLength);
+        [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Length,tLength);
         penalLength=penalLength+scale*pLength*passed;
         clength=clength+passed;
         barMemberLength(i)=scale;
 
         % Check Allowable stress
-        [passed, scale]=feval(strcat(prob,'cons'),2,stress(i),tLength,member(i,4));
+        [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Stress,stress(i),tLength,member(i,4));
         penalStress=penalStress+scale*pStress*passed;
         cstress=cstress+passed;
         barMemberStress(i)=scale;
 
         % Slenderness Ratio
-        [passed, scale]=feval(strcat(prob,'cons'),3,stress(i),tLength,member(i,4));
+        switch PRB.dv.TypeSection
+            case TypeSection.Discrete
+                [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Slender,stress(i),tLength,member(i,4));
+            case TypeSection.Continuous
+                passed = 0;     scale = 1;
+        end
+        
         penalSlenderness=penalSlenderness+scale*pSlender*passed;
         cslender=cslender+passed;
         barMemberSlender(i)=scale;
@@ -189,13 +195,13 @@ if ~isempty(stress)
 
     for i=1:noNode
         % x Displacement
-        [passed, scale]=feval(strcat(prob,'cons'),4,disX(i));
+        [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Displacement,disX(i));
         penalDis=penalDis+scale*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,1)=scale;
 
         % y Displacement
-        [passed, scale]=feval(strcat(prob,'cons'),4,disY(i));
+        [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Displacement,disY(i));
         penalDis=penalDis+scale*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,2)=scale;
@@ -211,7 +217,7 @@ else
         tLength=sqrt(tX+tY);
 
         % Member Length
-        [passed, scale]=feval(strcat(prob,'cons'),1,tLength);
+        [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Length,tLength);
         penalLength=penalLength+scale*pLength*passed;
         clength=clength+passed;
     end

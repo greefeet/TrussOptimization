@@ -143,7 +143,7 @@ for i=1:noNode
         %Specific CrossSectionIndex
         crossSectionSet = reshape(Raw(ad(i)).crossSection.SectionIndex,NOF.SectionLayer,NOF.Section)';
         prioritySet = reshape(Raw(ad(i)).crossSection.Priority,NOF.SectionLayer,NOF.Section)';
-        crossSectionIndex = round(crossSectionSet(dNode(i).DirectNodeZone(j),dNode(i).DirectNodeLayer(j)));
+        crossSectionIndex = round(crossSectionSet(dNode(i).DirectNodeZone(j),dNode(i).DirectNodeLayer(j)));     %For Discrete CrossSection
         priority = prioritySet(dNode(i).DirectNodeZone(j),dNode(i).DirectNodeLayer(j));
         dNode(i) = dNode(i).SpectDirectNode(j,crossSectionIndex,priority);
     end
@@ -209,31 +209,62 @@ end
 %STEP5 - Build Member %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rMember=zeros(noTotalMember,5);
 noMember = 0;
-for i=1:noNode
-    %Build Member from Determinate Structure
-    for j=1:dNode(i).noDirectNode 
-        noMember = noMember+1;
-        temp(1)=i;temp(2)=dNode(i).DirectNode(j);
-        rMember(noMember,1) = min(temp);
-        rMember(noMember,2) = max(temp);
-        rMember(noMember,3) = PRB.dv.crossSection(dNode(i).DirectNodeSectionIndex(j),1);
-        rMember(noMember,4) = PRB.dv.crossSection(dNode(i).DirectNodeSectionIndex(j),2);
-        rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
-    end
-    
-    %Build Member from Indeterminate Structure
-    for j=1:dNode(i).noOutNode 
-        if dNode(i).OutNodeSectionIsUsed(j) == 1
-            noMember = noMember+1;
-            temp(1)=i;temp(2)=dNode(i).OutNode(j);
-            rMember(noMember,1) = min(temp);
-            rMember(noMember,2) = max(temp);
-            rMember(noMember,3) = PRB.dv.crossSection(dNode(i).OutNodeSectionIndex(j),1);
-            rMember(noMember,4) = PRB.dv.crossSection(dNode(i).OutNodeSectionIndex(j),2);
-            rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+switch PRB.dv.TypeSection
+    case TypeSection.Discrete
+        %Discrete CrossSection
+        for i=1:noNode
+            %Build Member from Determinate Structure
+            for j=1:dNode(i).noDirectNode 
+                noMember = noMember+1;
+                temp(1)=i;temp(2)=dNode(i).DirectNode(j);
+                rMember(noMember,1) = min(temp);
+                rMember(noMember,2) = max(temp);
+                rMember(noMember,3) = PRB.dv.crossSection(dNode(i).DirectNodeSectionIndex(j),1);
+                rMember(noMember,4) = PRB.dv.crossSection(dNode(i).DirectNodeSectionIndex(j),2);
+                rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+            end
+
+            %Build Member from Indeterminate Structure
+            for j=1:dNode(i).noOutNode 
+                if dNode(i).OutNodeSectionIsUsed(j) == 1
+                    noMember = noMember+1;
+                    temp(1)=i;temp(2)=dNode(i).OutNode(j);
+                    rMember(noMember,1) = min(temp);
+                    rMember(noMember,2) = max(temp);
+                    rMember(noMember,3) = PRB.dv.crossSection(dNode(i).OutNodeSectionIndex(j),1);
+                    rMember(noMember,4) = PRB.dv.crossSection(dNode(i).OutNodeSectionIndex(j),2);
+                    rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+                end
+            end
         end
-    end
-end 
+    case TypeSection.Continuous
+        %Continuous CrossSection
+        for i=1:noNode
+            %Build Member from Determinate Structure
+            for j=1:dNode(i).noDirectNode 
+                noMember = noMember+1;
+                temp(1)=i;temp(2)=dNode(i).DirectNode(j);
+                rMember(noMember,1) = min(temp);
+                rMember(noMember,2) = max(temp);
+                rMember(noMember,3) = dNode(i).DirectNodeSectionIndex(j);
+                rMember(noMember,4) = [];
+                rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+            end
+
+            %Build Member from Indeterminate Structure
+            for j=1:dNode(i).noOutNode 
+                if dNode(i).OutNodeSectionIsUsed(j) == 1
+                    noMember = noMember+1;
+                    temp(1)=i;temp(2)=dNode(i).OutNode(j);
+                    rMember(noMember,1) = min(temp);
+                    rMember(noMember,2) = max(temp);
+                    rMember(noMember,3) = dNode(i).OutNodeSectionIndex(j);
+                    rMember(noMember,4) = [];
+                    rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+                end
+            end
+        end
+end
 
 rMember = sortrows(rMember,[1 2 -5]);
 oldNode = [0 0];
