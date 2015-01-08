@@ -148,10 +148,10 @@ function [fitness, penalty, weight] = getFitness(node,member)
     penalSlenderness=0;
     penalDis=0;
 
-    pLength=1/noMember*weight;
-    pStress=1/noMember*weight;
-    pSlender=1/noMember*weight;
-    pDis=1/noNode/2*weight;
+    pLength=weight/noMember;
+    pStress=weight/noMember;
+    pSlender=weight/noMember;
+    pDis=weight/noNode/2;
     penalty=0;
 
     % Constraints Details
