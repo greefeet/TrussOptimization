@@ -2,7 +2,7 @@ function [result, scale,allowable]=ProbCaseIcons(type,dat1,dat2,dat3)
 global PRB; dv = PRB.dv;    mp = PRB.mp;
 result=0; scale=0; allowable=0;
 switch type
-    case 1        
+    case TypeCons.Length        
         % Member Length
         % dat1 is member's length
         if dat1<dv.lengthMax
@@ -19,7 +19,7 @@ switch type
             result=1;
             scale=dat1/dv.lengthMax;
         end
-    case 2        
+    case TypeCons.Stress       
         % Member Stress
         % dat1 is stress
         % dat2 is length
@@ -47,7 +47,7 @@ switch type
             scale=dat1/maxTensile;
             allowable=maxTensile;
         end
-    case 3        
+    case TypeCons.Slender        
         % Member Slender
         % dat1 is stress
         % dat2 is length
@@ -70,7 +70,7 @@ switch type
         end
         scale=slendernessRatio/maxRatio;
         allowable=maxRatio;
-    case 4        
+    case TypeCons.Displacement        
         % Node Displacement
         % dat1 is displacement
         displacementAllowable=7;

@@ -13,9 +13,9 @@ PRB.info.Label = 'Weight (kg)';
 PRB.info.name = 'Truss 70m span problem by Shrestha and Ghaboussi (caseI)';
 
 %Material Properties (mp) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PRB.mp.elastic = 20100000;    % modulus of elastic (Newton/cm^2)
-PRB.mp.density = 0.00785103;  % density=7851.03 kg/m^3
-PRB.mp.fy = 24880;            % steel tensile strength fy (Newton/cm^2)
+PRB.mp.elastic = 20100000;    % Convert E from 2.01x10^5 MPa to 20100000 N/cm^2
+PRB.mp.density = 0.00785103;  % Convert Density from 7851.03 kg/m^3 to 0.00785103 kg/cm^3
+PRB.mp.fy = 24880;            % Convert Fy from 248.8 MPa to 24880 N/cm^2
 
 %Boundary Condition (bc) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create nodes - node [xCrd yCrd]
