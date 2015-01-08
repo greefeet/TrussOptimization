@@ -78,7 +78,7 @@ for i=1:numberMember
     checkMember(i)=true;
 
     % Check Stress
-    [passed, ~, allowable]=feval(strcat(prob,'cons'),2,stress(i),tLength,member(i,4));
+    [passed, ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Stress,stress(i),tLength,member(i,4));
     fprintf('(allow: %.0f) ',allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -91,7 +91,7 @@ for i=1:numberMember
     % Check slendernessRatio
     slendernessRatio=tLength/member(i,4);
     fprintf('      Slenderness : %12.2f ',slendernessRatio);
-    [passed, ~, allowable]=feval(strcat(prob,'cons'),3,stress(i),tLength,member(i,4));
+    [passed, ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Slender,stress(i),tLength,member(i,4));
     fprintf('(allow: %.0f) ',allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -107,7 +107,7 @@ end
 for i=1:numberNode
     % Check Displacement
     fprintf('   Node%d\n',i);
-    [passed , ~, allowable]=feval(strcat(prob,'cons'),4,disX(i));
+    [passed , ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Displacement,disX(i));
     fprintf('      coorX : %8.1f, disX : %6.2f (allow: +-%d) ',node(i,1),disX(i),allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -115,7 +115,7 @@ for i=1:numberNode
         fprintf('Pass\n');
         countPass=countPass+1;
     end
-    [passed , ~, allowable]=feval(strcat(prob,'cons'),4,disY(i));
+    [passed , ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Displacement,disY(i));
     fprintf('      coorY : %8.1f, disY : %6.2f (allow: +-%d) ',node(i,2),disY(i),allowable);
     if passed==1
         fprintf('NotPass\n');
@@ -344,11 +344,19 @@ ratio=height*0.1/maxDis;
 draw=node+ratio*displacement;
 no=size(element);
 no=no(1);
-maxA=max(crossSection);
-minA=min(crossSection);
+% maxA=max(crossSection);
+% minA=min(crossSection);
+switch PRB.dv.TypeSection
+    case TypeSection.Discrete
+        maxA=max(dv.crossSection(:,1));
+        minA=min(dv.crossSection(:,1));
+    case TypeSection.Continuous
+        maxA=PRB.dv.sectionMax;
+        minA=PRB.dv.sectionMin;
+end
+
 for i=1:no
     lw=1+4*(element(i,3)-minA)/(maxA-minA);
-
     plot(node(element(i,1:2),1),node(element(i,1:2),2),'-black','LineWidth',lw);
 end
 

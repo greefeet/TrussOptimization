@@ -38,8 +38,15 @@ plot(bc.node(bc.fix(:,1),1),bc.node(bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdg
 
 [node, member]=Truss2Ddecode(indi);
 noMember=length(member(:,1));
-maxA=max(dv.crossSection(:,1));
-minA=min(dv.crossSection(:,1));
+switch PRB.dv.TypeSection
+    case TypeSection.Discrete
+        maxA=max(dv.crossSection(:,1));
+        minA=min(dv.crossSection(:,1));
+    case TypeSection.Continuous
+        maxA=PRB.dv.sectionMax;
+        minA=PRB.dv.sectionMin;
+end
+
 
 for i=1:noMember
     lw=1+4*(member(i,3)-minA)/(maxA-minA);
@@ -53,7 +60,7 @@ plot(bc.node(bc.load(:,1),1),bc.node(bc.load(:,1),2),'mV','LineWidth',1,'MarkerE
 plot(bc.node(bc.fix(:,1),1),bc.node(bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
 til=sprintf('Best Individual\n');
 title(til,'FontWeight','bold')
-xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f kg\n%s, Population''s size %d',gen,statistic.hisFitness(gen),Method.name,Method.NoSolver));
+xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f %s\n%s, Population''s size %d',gen,statistic.hisFitness(gen),PRB.info.Label,Method.name,Method.NoSolver));
 
 
 showDetail=1;
