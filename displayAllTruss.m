@@ -55,8 +55,14 @@ for j=1:noFile
         noMember=length(member(:,1));
         noNode=length(node(:,1));
         
-        maxA=max(PRB.dv.crossSection(:,1));
-        minA=min(PRB.dv.crossSection(:,1));
+        switch PRB.dv.TypeSection
+            case TypeSection.Discrete
+                maxA=max(dv.crossSection(:,1));
+                minA=min(dv.crossSection(:,1));
+            case TypeSection.Continuous
+                maxA=PRB.dv.sectionMax;
+                minA=PRB.dv.sectionMin;
+        end
         
         %Draw Structure
         for i=1:noMember
