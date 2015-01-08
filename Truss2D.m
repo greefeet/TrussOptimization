@@ -77,7 +77,7 @@ function result = sa_run(node,member)
 
     %run OpenSees
     [~,sout]=system('OpenSeesHelper.exe File-Input.tcl');
-
+    
     if isempty(strfind(sout,'analyze failed'))
         result = true;
     else
@@ -123,8 +123,16 @@ function [fitness, penalty, weight] = getFitness(node,member)
     mp = PRB.mp;                        %Material Properties
     prob = PRB.info.prob;
 
-    sa_run(node,member);                %Run OpenSees
-    [stress, disX, disY]=sa_results;    %Get Results
+    isStable = sa_run(node,member);     %Run OpenSees
+    
+    if isStable == true;
+        [stress, disX, disY]=sa_results;    %Get Results
+%         inStability=1;
+    else
+        stress=[]; disX=[]; disY=[];
+%         inStability=0;
+    end
+    
 
     noNode=length(node(:,1));
     noMember=length(member(:,1));
@@ -151,7 +159,8 @@ function [fitness, penalty, weight] = getFitness(node,member)
     pLength=weight/noMember;
     pStress=weight/noMember;
     pSlender=weight/noMember;
-    pDis=weight/noNode/2;
+%     pDis=weight/noNode/2;
+    pDis=weight;
     penalty=0;
 
     % Constraints Details
@@ -161,7 +170,7 @@ function [fitness, penalty, weight] = getFitness(node,member)
         barMemberSlender=zeros(noMember,1);
         barNodeDisplacement=zeros(noNode,2);
     end
-    inStability=1;
+%     inStability=1;
 if ~isempty(stress)
     for i=1:noMember
         tX=(node(member(i,1),1)-node(member(i,2),1))^2;
@@ -210,7 +219,7 @@ if ~isempty(stress)
 else
     NOF.Instability = NOF.Instability + 1;
     fprintf('\nInStability :  %d\n',NOF.Instability);
-    inStability=0;
+    isStable=0;
     for i=1:noMember
         tX=(node(member(i,1),1)-node(member(i,2),1))^2;
         tY=(node(member(i,1),2)-node(member(i,2),2))^2;
@@ -232,7 +241,7 @@ penalty=fitness-weight;
 
 if showDetail==1
     set(0,'CurrentFigure',4);
-    if inStability==1
+    if isStable==true
         clf
         subplot(2,2,1);
         plot(1:noMember,barMemberLength);
