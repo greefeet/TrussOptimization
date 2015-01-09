@@ -216,9 +216,9 @@ figure(2);	figure(1);
 
 % Set ylim of Statistic and History
 set(0,'CurrentFigure',1);
-ylim([0 500000]);
+% ylim([0 500000]);             %Display For ProbCaseI
 set(0,'CurrentFigure',2);
-ylim([0 500000]);
+% ylim([0 500000]);             %Display For ProbCaseI
 
 % Draw Design Space
 set(0,'CurrentFigure',3);
