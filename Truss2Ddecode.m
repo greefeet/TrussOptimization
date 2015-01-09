@@ -82,8 +82,7 @@ for i=1:noNode
             for k=1:j-1
                 nJ = dNode(i).DirectNode(j);
                 nK = dNode(i).DirectNode(k);
-                % Check node is linked
-                if dNode(nJ).isHave(nK)
+                if dNode(nJ).isHave(nK)     % Check node is linked
                     for l=1:dNode(nJ).noDirectNode
                         nL = dNode(nJ).DirectNode(l);
                         if nL ~= i && dNode(nK).isHave(nL)
@@ -228,7 +227,7 @@ switch PRB.dv.TypeSection
 
             %Build Member from Indeterminate Structure
             for j=1:dNode(i).noOutNode 
-                if dNode(i).OutNodeSectionIsUsed(j) == 1
+                if round(dNode(i).OutNodeSectionIsUsed(j)) == 1
                     noMember = noMember+1;
                     temp(1)=i;temp(2)=dNode(i).OutNode(j);
                     rMember(noMember,1) = min(temp);
@@ -255,7 +254,7 @@ switch PRB.dv.TypeSection
 
             %Build Member from Indeterminate Structure
             for j=1:dNode(i).noOutNode 
-                if dNode(i).OutNodeSectionIsUsed(j) == 1
+                if round(dNode(i).OutNodeSectionIsUsed(j)) == 1
                     noMember = noMember+1;
                     temp(1)=i;temp(2)=dNode(i).OutNode(j);
                     rMember(noMember,1) = min(temp);
