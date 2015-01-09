@@ -13,7 +13,7 @@ PRB.info.Label = 'Pound (lb)';
 PRB.info.name = 'Truss2D Deb and Gulati 2001 (caseII)';
 
 %Material Properties (mp) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PRB.mp.elastic = 10000;       % modulus of elastic (ksi) kip per square inch (ksi, kip/in^2) 
+PRB.mp.elastic = 10000;       % modulus of elastic (ksi) kip per square inch (ksi, kip/in^2)
 PRB.mp.density = 0.1;         % density (pci, Pound per cubic inch)
 PRB.mp.fy = 25;               % steel tensile strength fy (ksi)
 
@@ -46,7 +46,7 @@ PRB.dv.criticalArea=[];
 
 % Discrete Section
 PRB.dv.crossSection=[];
-PRB.dv.lengthMin=120;     % minimumMemberLength (in)
+PRB.dv.lengthMin=180;     % minimumMemberLength (in)
 PRB.dv.lengthMax=1000;    % maximumMemberLength (in)
 PRB.dv.xMin = 0;
 PRB.dv.xMax = 720;
