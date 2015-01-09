@@ -142,7 +142,6 @@ for i=1:noNode
         %Specific CrossSectionIndex
         crossSectionSet = reshape(Raw(ad(i)).crossSection.SectionIndex,NOF.SectionLayer,NOF.Section)';
         prioritySet = reshape(Raw(ad(i)).crossSection.Priority,NOF.SectionLayer,NOF.Section)';
-%         crossSectionIndex = round(crossSectionSet(dNode(i).DirectNodeZone(j),dNode(i).DirectNodeLayer(j)));     %For Discrete CrossSection
         crossSectionIndex = crossSectionSet(dNode(i).DirectNodeZone(j),dNode(i).DirectNodeLayer(j)); 
         priority = prioritySet(dNode(i).DirectNodeZone(j),dNode(i).DirectNodeLayer(j));
         dNode(i) = dNode(i).SpectDirectNode(j,crossSectionIndex,priority);
@@ -198,7 +197,6 @@ for i=1:noNode
         crossSectionSet = reshape(Raw(ad(i)).crossSection.SectionIndex,NOF.SectionLayer,NOF.Section)';
         prioritySet = reshape(Raw(ad(i)).crossSection.Priority,NOF.SectionLayer,NOF.Section)';
         indeterminateSet = reshape(Raw(ad(i)).indeStruct,NOF.IndeterminateLayer,NOF.Section)';
-%         crossSectionIndex = round(crossSectionSet(dNode(i).OutNodeZone(j),dNode(i).OutNodeLayer(j)));
         crossSectionIndex = crossSectionSet(dNode(i).OutNodeZone(j),dNode(i).OutNodeLayer(j));
         priority = prioritySet(dNode(i).OutNodeZone(j),dNode(i).OutNodeLayer(j));
         
@@ -220,8 +218,9 @@ switch PRB.dv.TypeSection
                 temp(1)=i;temp(2)=dNode(i).DirectNode(j);
                 rMember(noMember,1) = min(temp);
                 rMember(noMember,2) = max(temp);
-                rMember(noMember,3) = round(PRB.dv.crossSection(dNode(i).DirectNodeSectionIndex(j),1));
-                rMember(noMember,4) = PRB.dv.crossSection(dNode(i).DirectNodeSectionIndex(j),2);
+                SectionIndex = round(dNode(i).DirectNodeSectionIndex(j));
+                rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
+                rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
                 rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
             end
 
@@ -232,8 +231,9 @@ switch PRB.dv.TypeSection
                     temp(1)=i;temp(2)=dNode(i).OutNode(j);
                     rMember(noMember,1) = min(temp);
                     rMember(noMember,2) = max(temp);
-                    rMember(noMember,3) = round(PRB.dv.crossSection(dNode(i).OutNodeSectionIndex(j),1));
-                    rMember(noMember,4) = PRB.dv.crossSection(dNode(i).OutNodeSectionIndex(j),2);
+                    SectionIndex = round(dNode(i).OutNodeSectionIndex(j));
+                    rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
+                    rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
                     rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
                 end
             end
