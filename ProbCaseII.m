@@ -40,12 +40,13 @@ PRB.bc.load=[
 PRB.dv.TypeSection=TypeSection.Continuous;
 
 % Continuous Section
-PRB.dv.sectionMin=0.09;   % minimumCrossSectionArea (in^2)
+PRB.dv.sectionMin=0;      % minimumCrossSectionArea (in^2)
 PRB.dv.sectionMax=35.0;   % maximumCrossSectionArea (in^2)
-PRB.dv.criticalArea=[];
 
 % Discrete Section
 PRB.dv.crossSection=[];
+
+% Design Space
 PRB.dv.lengthMin=180;     % minimumMemberLength (in)
 PRB.dv.lengthMax=1000;    % maximumMemberLength (in)
 PRB.dv.xMin = 0;
