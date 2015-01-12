@@ -66,41 +66,54 @@ countPass=0;
 weight=0;
 checkMember=1:numberMember;
 for i=1:numberMember
-    fprintf('   Member%d\n',i);
-    fprintf('      StartNode   : (%.1f,%.1f)\n',node(member(i,1),1),node(member(i,1),2));
-    fprintf('      StopNode    : (%.1f,%.1f)\n',node(member(i,2),1),node(member(i,2),2));
-    tLength=sqrt((node(member(i,1),1)-node(member(i,2),1))^2+(node(member(i,1),2)-node(member(i,2),2))^2);
-    fprintf('      Length      : %12.2f\n',tLength);
-    fprintf('      SectionArea : %12.2f\n',member(i,3));
-    fprintf('      Radi of Gyr : %12.2f\n',member(i,4));
-    fprintf('      Stress      : %12.2f ',stress(i));
-    weight=weight+tLength*mp.density*member(i,3);
-    checkMember(i)=true;
+    if member(i,3) > 0
+        fprintf('   Member%d\n',i);
+        fprintf('      StartNode   : (%.1f,%.1f)\n',node(member(i,1),1),node(member(i,1),2));
+        fprintf('      StopNode    : (%.1f,%.1f)\n',node(member(i,2),1),node(member(i,2),2));
+        tLength=sqrt((node(member(i,1),1)-node(member(i,2),1))^2+(node(member(i,1),2)-node(member(i,2),2))^2);
+        fprintf('      Length      : %12.4f\n',tLength);
+        fprintf('      SectionArea : %12.4f\n',member(i,3));
+        fprintf('      Radi of Gyr : %12.4f\n',member(i,4));
+        fprintf('      Stress      : %12.4f ',stress(i));
+        weight=weight+tLength*mp.density*member(i,3);
+        checkMember(i)=true;
 
-    % Check Stress
-    [passed, ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Stress,stress(i),tLength,member(i,4));
-    fprintf('(allow: %.0f) ',allowable);
-    if passed==1
-        fprintf('NotPass\n');
-        checkMember(i)=false;
-    else
-        fprintf('Pass\n');
-        countPass=countPass+1;
-    end
+        % Check Stress
+        [passed, ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Stress,stress(i),tLength,member(i,4));
+        fprintf('(allow: %.0f) ',allowable);
+        if passed==1
+            fprintf('NotPass\n');
+            checkMember(i)=false;
+        else
+            fprintf('Pass\n');
+            countPass=countPass+1;
+        end
 
-    % Check slendernessRatio
-    slendernessRatio=tLength/member(i,4);
-    fprintf('      Slenderness : %12.2f ',slendernessRatio);
-    [passed, ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Slender,stress(i),tLength,member(i,4));
-    fprintf('(allow: %.0f) ',allowable);
-    if passed==1
-        fprintf('NotPass\n');
-        checkMember(i)=false;
+        % Check slendernessRatio
+        slendernessRatio=tLength/member(i,4);
+        fprintf('      Slenderness : %12.2f ',slendernessRatio);
+        [passed, ~, allowable]=feval(strcat(prob,'cons'),TypeCons.Slender,stress(i),tLength,member(i,4));
+        fprintf('(allow: %.0f) ',allowable);
+        if passed==1
+            fprintf('NotPass\n');
+            checkMember(i)=false;
+        else
+            fprintf('Pass\n');
+            countPass=countPass+1;
+        end
+        fprintf('\n');
     else
-        fprintf('Pass\n');
-        countPass=countPass+1;
+        fprintf('   Member%d\n',i);
+        fprintf('      StartNode   : (%.1f,%.1f)\n',node(member(i,1),1),node(member(i,1),2));
+        fprintf('      StopNode    : (%.1f,%.1f)\n',node(member(i,2),1),node(member(i,2),2));
+        tLength=sqrt((node(member(i,1),1)-node(member(i,2),1))^2+(node(member(i,1),2)-node(member(i,2),2))^2);
+        fprintf('      Length      : %12.4f\n',tLength);
+        fprintf('      SectionArea : %12.4f\n',member(i,3));
+        fprintf('      Radi of Gyr : %12.4f\n',member(i,4));
+        fprintf('      Zero CrossSection Member\n\n');
+        checkMember(i)=true;    
+        countPass=countPass+2;
     end
-    fprintf('\n');
 end
 
 %Check Node Constraints %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -329,7 +342,7 @@ function [stress, disX, disY] = sa_results
     disY=displacement(2:2:numberNode);
     fclose(fid);
 end
-function [h]=plotDis2D(node,displacement,stress,load,fix,region,element,crossSection,checkMember)
+function [h]=plotDis2D(node,displacement,stress,load,fix,region,element,~,checkMember)
 % plot Input - Node Support Element Load
 clf
 global PRB;
@@ -340,12 +353,12 @@ maxDis=max(abs(displacement));
 maxDis=max(maxDis);
 
 height=region(4)-region(3);
-ratio=height*0.1/maxDis;
-draw=node+ratio*displacement;
+% ratio=height*0.1/maxDis;
+% draw=node+ratio*displacement;
+draw=node+displacement;
 no=size(element);
 no=no(1);
-% maxA=max(crossSection);
-% minA=min(crossSection);
+
 switch PRB.dv.TypeSection
     case TypeSection.Discrete
         maxA=max(PRB.dv.crossSection(:,1));
@@ -355,11 +368,13 @@ switch PRB.dv.TypeSection
         minA=PRB.dv.sectionMin;
 end
 
+%Draw Member
 for i=1:no
     lw=1+4*(element(i,3)-minA)/(maxA-minA);
     plot(node(element(i,1:2),1),node(element(i,1:2),2),'-black','LineWidth',lw);
 end
 
+%Draw Member Displacement
 for i=1:no
     lw=1;
     if stress(i)>0
