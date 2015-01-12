@@ -348,8 +348,8 @@ no=no(1);
 % minA=min(crossSection);
 switch PRB.dv.TypeSection
     case TypeSection.Discrete
-        maxA=max(dv.crossSection(:,1));
-        minA=min(dv.crossSection(:,1));
+        maxA=max(PRB.dv.crossSection(:,1));
+        minA=min(PRB.dv.crossSection(:,1));
     case TypeSection.Continuous
         maxA=PRB.dv.sectionMax;
         minA=PRB.dv.sectionMin;
