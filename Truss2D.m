@@ -179,13 +179,13 @@ if ~isempty(stress)
 
         % Member Length
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Length,tLength);
-        penalLength=penalLength+scale*pLength*passed;
+        penalLength=penalLength+(scale+1)*pLength*passed;
         clength=clength+passed;
         barMemberLength(i)=scale;
 
         % Check Allowable stress
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Stress,stress(i),tLength,member(i,4));
-        penalStress=penalStress+scale*pStress*passed;
+        penalStress=penalStress+(scale+1)*pStress*passed;
         cstress=cstress+passed;
         barMemberStress(i)=scale;
 
@@ -197,7 +197,7 @@ if ~isempty(stress)
                 passed = 0;     scale = 1;
         end
         
-        penalSlenderness=penalSlenderness+scale*pSlender*passed;
+        penalSlenderness=penalSlenderness+(scale+1)*pSlender*passed;
         cslender=cslender+passed;
         barMemberSlender(i)=scale;
     end
@@ -205,13 +205,13 @@ if ~isempty(stress)
     for i=1:noNode
         % x Displacement
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Displacement,disX(i));
-        penalDis=penalDis+scale*pDis*passed;
+        penalDis=penalDis+(scale+1)*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,1)=scale;
 
         % y Displacement
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Displacement,disY(i));
-        penalDis=penalDis+scale*pDis*passed;
+        penalDis=penalDis+(scale+1)*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,2)=scale;
     end
