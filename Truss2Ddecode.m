@@ -51,7 +51,9 @@ ad = rawAd(1:noNode,1);
 
 %STEP3 - DecodeConnectivity %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %DelaunayTriangulation
-x=node(:,1);  y=node(:,2);  tri = delaunay(x,y);  noTri=length(tri(:,1));
+% x=node(:,1);  y=node(:,2);  tri = delaunay(x,y);  noTri=length(tri(:,1));
+tri=delaunayTriangulation(node).ConnectivityList;
+noTri=length(tri(:,1));
 
 %Preallowcate
 dNode = Node.empty(noNode,0);
