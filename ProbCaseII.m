@@ -53,4 +53,7 @@ PRB.dv.xMin = 0;
 PRB.dv.xMax = 720;
 PRB.dv.yMin = 0;
 PRB.dv.yMax = 360;
+
+%Penalty Function %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+PRB.PenaltyConstant = 10000;
 end
