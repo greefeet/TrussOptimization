@@ -3,130 +3,16 @@ function [fitness, penalty, weight] = Truss2D(indi)
 [node, member]=Truss2Ddecode(indi);                   %Decode individual
 [fitness, penalty, weight]=getFitness(node,member);   %Calculate Fitness
 end
-function result = sa_run(node,member)
-%Structure Analysis by OpenSees
-    global PRB;
-    mp = PRB.mp;    %Material Properties
-    bc = PRB.bc;    %Boundary Condition
-
-    %Clear OutputFile
-    [fid, mess] = fopen('File-OutStress.out', 'w');
-    while fid<0
-        fprintf('ERROR : %s\n',mess);
-        [fid, mess] = fopen('File-OutStress.out', 'w');
-    end
-    fclose(fid);
-
-    [fid, mess] = fopen('File-OutDisp.out', 'w');
-    while fid<0
-        fprintf('ERROR : %s\n',mess);
-        [fid, mess] = fopen('File-OutDisp.out', 'w');
-    end
-    fclose(fid);
-
-    %Write InputFile
-    %initial data
-    fileID = fopen('File-Input.tcl','w');
-    fprintf(fileID,'wipe\n');
-    fprintf(fileID,'model BasicBuilder -ndm 2 -ndf 2\n');
-
-    %loop node
-    numberNode=length(node(:,1));
-    for i=1:numberNode
-        fprintf(fileID,'node %d %.1f %.1f\n',i,node(i,1),node(i,2));
-    end
-
-    %loop support
-    for i=1:length(bc.fix(:,1))
-        fprintf(fileID,'fix %d %d %d\n',bc.fix(i,1),bc.fix(i,2),bc.fix(i,3));
-    end
-
-    %loop element
-    fprintf(fileID,'uniaxialMaterial Elastic 1 %d\n',mp.elastic); %E=201 GPa
-    numberMember=length(member(:,1));
-    for i=1:numberMember
-        fprintf(fileID,'element truss %d %d %d %d 1\n',i,member(i,1),member(i,2),member(i,3));
-    end
-
-    %load
-    fprintf(fileID,'pattern Plain 1 "Linear" {\n');
-
-    %loop Load
-    numberLoad=length(bc.load(:,1));
-    for i=1:numberLoad
-        fprintf(fileID,'load %d %d %d\n',bc.load(i,1),bc.load(i,2),bc.load(i,3));
-    end
-    fprintf(fileID,'}\n');
-
-    %final data
-    fprintf(fileID,'system BandSPD\n');
-    fprintf(fileID,'numberer RCM\n');
-    fprintf(fileID,'constraints Plain\n');
-    fprintf(fileID,'integrator LoadControl 1.0\n');
-    fprintf(fileID,'algorithm Linear\n');
-    fprintf(fileID,'analysis Static\n');
-    fprintf(fileID,'recorder Node -file File-OutDisp.out -node ');
-    fprintf(fileID,'%d ',1:numberNode);
-    fprintf(fileID,'-dof 1 2 disp\n');
-    fprintf(fileID,'recorder Element -file File-OutStress.out -ele ');
-    fprintf(fileID,'%d ',1:numberMember);
-    fprintf(fileID,'material stress\n');
-    fprintf(fileID,'analyze 1\n');
-    fprintf(fileID,'quit\n');
-    fclose(fileID);
-
-    %run OpenSees
-    [~,sout]=system('OpenSeesHelper.exe File-Input.tcl');
-    
-    if isempty(strfind(sout,'analyze failed'))
-        result = true;
-    else
-        result = false;
-    end
-end
-function [stress, disX, disY] = sa_results
-    % Load Stress
-    fid = fopen('File-OutStress.out');
-    stress = fscanf(fid, '%f ');
-    str=fscanf(fid,'%s');
-    fclose(fid);
-
-    % Load Displacement
-    fid = fopen('File-OutDisp.out');
-    displacement = fscanf(fid,'%f ');
-    numberNode=length(displacement);
-    disX=displacement(1:2:numberNode);
-    disY=displacement(2:2:numberNode);
-    fclose(fid);
-
-    % Delay Temporary Fix Load Output
-    order = 1;
-    while (numel(disX)==0 || ~isempty(strfind(str,'#'))) && order < 10
-        order = order + 1;
-        pause(0.01);
-        system('OpenSeesHelper.exe File-Input.tcl');
-        [stress,disX,disY] = sa_results;
-    end
-
-    % Delay Temporary Fix Load Stress
-    if ~isempty(strfind(str,'#')) || numel(disX)==0
-        stress = [];
-        disX = [];
-        disY = [];
-    end
-
-end
 function [fitness, penalty, weight] = getFitness(node,member)
     global showDetail;
     global NOF;
     global PRB;
     mp = PRB.mp;                            %Material Properties
     prob = PRB.info.prob;                   %Problem
-
-    isStable = sa_run(node,member);         %Run OpenSees
+    isStable = OpenSeesRUN(node,member);    %Run OpenSees
     
     if isStable == true;
-        [stress, disX, disY]=sa_results;    %Get Results
+        [stress, disX, disY]=OpenSeesRESULTS;    %Get Results
     else
         stress=[]; disX=[]; disY=[];
     end
