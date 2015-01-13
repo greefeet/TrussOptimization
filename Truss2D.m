@@ -120,20 +120,17 @@ function [fitness, penalty, weight] = getFitness(node,member)
     global showDetail;
     global NOF;
     global PRB;
-    mp = PRB.mp;                        %Material Properties
-    prob = PRB.info.prob;
+    mp = PRB.mp;                            %Material Properties
+    prob = PRB.info.prob;                   %Problem
 
-    isStable = sa_run(node,member);     %Run OpenSees
+    isStable = sa_run(node,member);         %Run OpenSees
     
     if isStable == true;
         [stress, disX, disY]=sa_results;    %Get Results
-%         inStability=1;
     else
         stress=[]; disX=[]; disY=[];
-%         inStability=0;
     end
     
-
     noNode=length(node(:,1));
     noMember=length(member(:,1));
 
@@ -145,7 +142,8 @@ function [fitness, penalty, weight] = getFitness(node,member)
         tLength=sqrt(tX+tY);
         weight=weight+tLength*mp.density*member(i,3);
     end
-
+    
+    penalty=0;
     clength=0;
     cstress=0;
     cslender=0;
@@ -159,10 +157,8 @@ function [fitness, penalty, weight] = getFitness(node,member)
     pLength=weight/noMember;
     pStress=weight/noMember;
     pSlender=weight/noMember;
-%     pDis=weight/noNode/2;
-    pDis=weight;
-    penalty=0;
-
+    pDis=weight/noNode/2;
+    
     % Constraints Details
     if showDetail==1
         barMemberLength=zeros(noMember,1);
@@ -170,7 +166,7 @@ function [fitness, penalty, weight] = getFitness(node,member)
         barMemberSlender=zeros(noMember,1);
         barNodeDisplacement=zeros(noNode,2);
     end
-%     inStability=1;
+    
 if ~isempty(stress)
     for i=1:noMember
         tX=(node(member(i,1),1)-node(member(i,2),1))^2;
@@ -179,13 +175,13 @@ if ~isempty(stress)
 
         % Member Length
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Length,tLength);
-        penalLength=penalLength+(scale+1)*pLength*passed;
+        penalLength=penalLength+scale*pLength*passed;
         clength=clength+passed;
         barMemberLength(i)=scale;
 
         % Check Allowable stress
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Stress,stress(i),tLength,member(i,4));
-        penalStress=penalStress+(scale+1)*pStress*passed;
+        penalStress=penalStress+scale*pStress*passed;
         cstress=cstress+passed;
         barMemberStress(i)=scale;
 
@@ -197,7 +193,7 @@ if ~isempty(stress)
                 passed = 0;     scale = 1;
         end
         
-        penalSlenderness=penalSlenderness+(scale+1)*pSlender*passed;
+        penalSlenderness=penalSlenderness+scale*pSlender*passed;
         cslender=cslender+passed;
         barMemberSlender(i)=scale;
     end
@@ -205,13 +201,13 @@ if ~isempty(stress)
     for i=1:noNode
         % x Displacement
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Displacement,disX(i));
-        penalDis=penalDis+(scale+1)*pDis*passed;
+        penalDis=penalDis+scale*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,1)=scale;
 
         % y Displacement
         [passed, scale]=feval(strcat(prob,'cons'),TypeCons.Displacement,disY(i));
-        penalDis=penalDis+(scale+1)*pDis*passed;
+        penalDis=penalDis+scale*pDis*passed;
         cdis=cdis+passed;
         barNodeDisplacement(i,2)=scale;
     end
@@ -235,8 +231,20 @@ else
     cdis=noNode*2;
     penalty=weight*10;
 end
-fitness=weight+(clength/noMember)*weight+(cstress/noMember)*weight+(cslender/noMember)*weight+(cdis/noNode*2)*weight+penalty;
+
+%Penalty by CONSTANT SCORE
+if PRB.dv.TypeSection==TypeSection.Continuous && cstress+cslender+cdis+clength > 0
+    penalty=penalty+PRB.PenaltyConstant;
+end
+fitness=penalty;
+
+%Penalty by Condition
+fitness=fitness+weight+(clength/noMember)*weight+(cstress/noMember)*weight+(cslender/noMember)*weight+(cdis/noNode*2)*weight;
+
+%Penalty by Violence
 fitness=fitness+penalLength+penalStress+penalSlenderness+penalDis;
+
+%Splite Penalty and Weight
 penalty=fitness-weight;
 
 if showDetail==1
