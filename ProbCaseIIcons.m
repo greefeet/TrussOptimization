@@ -1,5 +1,5 @@
 function [result, scale,allowable]=ProbCaseIIcons(type,dat1,~,~)
-global PRB; dv = PRB.dv;    mp = PRB.mp;
+global PRB; mp = PRB.mp;
 result=0; scale=0; allowable=0;
 switch type
     case TypeCons.Length
