@@ -47,7 +47,7 @@ PRB.dv.sectionMax=35.0;   % maximumCrossSectionArea (in^2)
 PRB.dv.crossSection=[];
 
 % Design Space
-PRB.dv.lengthMin=240;     % minimumMemberLength (in)
+PRB.dv.lengthMin=180;     % minimumMemberLength (in)
 PRB.dv.lengthMax=1000;    % maximumMemberLength (in)
 PRB.dv.xMin = 0;
 PRB.dv.xMax = 720;
