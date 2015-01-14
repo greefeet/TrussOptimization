@@ -7,12 +7,21 @@ function [fitness, penalty, weight] = getFitness(node,member)
     global showDetail;
     global NOF;
     global PRB;
-    mp = PRB.mp;                            %Material Properties
-    prob = PRB.info.prob;                   %Problem
-    isStable = OpenSeesRUN(node,member);    %Run OpenSees
+    mp = PRB.mp;                                %Material Properties
+    prob = PRB.info.prob;                       %Problem
+    
+    memSize=size(member);                       %Critical Case cann't Build Connection
+    if memSize(1)==0
+        weight=0;
+        penalty=PRB.PenaltyConstant*100;
+        fitness=penalty;
+        return;
+    end
+    
+    isStable = OpenSeesRUN(node,member);        %Run OpenSees
     
     if isStable == true;
-        [stress, disX, disY]=OpenSeesRESULTS;    %Get Results
+        [stress, disX, disY]=OpenSeesRESULTS;   %Get Results
     else
         stress=[]; disX=[]; disY=[];
     end
