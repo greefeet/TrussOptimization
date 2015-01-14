@@ -28,11 +28,6 @@ StatAll=Running.stat;
 displayStat(noFile,StatAll,'Generations Number',PRB.info.Label)
 pause(0.0001);
 
-%design space
-set(0,'CurrentFigure',1);
-xlim([PRB.dv.xMin PRB.dv.xMax])
-ylim([PRB.dv.yMin PRB.dv.yMax])
-
 %Loop Display
 for j=1:noFile
     
@@ -45,10 +40,12 @@ for j=1:noFile
         clf(1,'reset');
         hold on;
         daspect([1 1 1]);
+        xlim([PRB.dv.xMin PRB.dv.xMax]);
+        ylim([PRB.dv.yMin PRB.dv.yMax]);
         til=sprintf('Best Individual\n');
         title(til,'FontWeight','bold');
         ylabel('y');
-        xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f kg\n%s, Population''s size %d',j,Running.stat(j,3),Method.name,Method.NoSolver));
+        xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f %s\n%s, Population''s size %d',j,Running.stat(j,3),PRB.info.Label,Method.name,Method.NoSolver));
                 
         %Transform RAW Data to Truss Structure
         [node, member]=Truss2Ddecode(Solution.indi);
