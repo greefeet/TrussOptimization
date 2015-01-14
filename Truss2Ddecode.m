@@ -253,6 +253,7 @@ switch PRB.dv.TypeSection
                 rMember(noMember,1) = min(temp);
                 rMember(noMember,2) = max(temp);
                 rMember(noMember,3) = dNode(i).DirectNodeSectionIndex(j);
+                rMember(noMember,4) = dNode(i).DirectNodeSectionIndex(j);
                 rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
             end
 
@@ -264,6 +265,7 @@ switch PRB.dv.TypeSection
                     rMember(noMember,1) = min(temp);
                     rMember(noMember,2) = max(temp);
                     rMember(noMember,3) = dNode(i).OutNodeSectionIndex(j);
+                    rMember(noMember,4) = dNode(i).OutNodeSectionIndex(j);
                     rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
                 end
             end
