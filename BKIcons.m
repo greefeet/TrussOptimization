@@ -1,4 +1,4 @@
-function [result, scale,allowable]=BKIcons(type,dat1,~,~)
+function [result, scale,allowable]=BKIcons(type,dat1,~,dat3)
 global PRB; mp = PRB.mp;
 result=0; scale=0; allowable=0;
 switch type
@@ -11,23 +11,28 @@ switch type
         % Member Stress
         % dat1 is stress
         % dat2 is length
-        % dat3 is radius of gyration
-        if dat1 < 0
-            % Compression
-            maxCompressive=mp.fy;
-            if dat1*-1>maxCompressive
-                result=1;
-            end
-            scale=dat1*-1/maxCompressive;
-            allowable=-1*maxCompressive;
+        % dat3 is radius of gyration and equal CrossSectionArea
+        if dat3==0
+            scale=0;
+            allowable=1;
         else
-            % Tensile
-            maxTensile=mp.fy;
-            if dat1>maxTensile
-                result=1;
+            if dat1 < 0
+                % Compression
+                maxCompressive=mp.fy;
+                if dat1*-1>maxCompressive
+                    result=1;
+                end
+                scale=dat1*-1/maxCompressive;
+                allowable=-1*maxCompressive;
+            else
+                % Tensile
+                maxTensile=mp.fy;
+                if dat1>maxTensile
+                    result=1;
+                end
+                scale=dat1/maxTensile;
+                allowable=maxTensile;
             end
-            scale=dat1/maxTensile;
-            allowable=maxTensile;
         end
     case TypeCons.Slender
         % Member Slender
