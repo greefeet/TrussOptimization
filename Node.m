@@ -1,6 +1,5 @@
 classdef Node
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+%Node Class is used for Truss2D.m
     
     properties
         x
@@ -57,7 +56,6 @@ classdef Node
                     isExist = 1;
                 end
             end
-%             isExist = sum(ismember(obj.DirectNode,index));
             if isExist == 0
                 now = obj.noDirectNode + 1;
                 obj.noDirectNode = now;
@@ -81,15 +79,12 @@ classdef Node
                     isExist = 1;
                 end
             end
-%             isExist = sum(ismember(obj.OutNode,index));
             if isExist == 0
                 for i=1:obj.noDirectNode
                     if obj.DirectNode(i)==index
                         isExist = 1;
                     end
                 end
-%                 isExist = sum(ismember(obj.DirectNode,index));
-                
                 if isExist == 0
                     now = obj.noOutNode + 1; 
                     obj.noOutNode = now;

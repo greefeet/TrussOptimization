@@ -2,10 +2,10 @@ function start
 %START Start Truss Optimization Framework
 
 %Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-prob = 'ProbCaseI';
+prob = 'BKI';
 method = 'GA';
-nloop = 500;
-nsol = 5;
+nloop = 300;
+nsol = 500;
 
 %Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('[Problem] %s\n',prob);

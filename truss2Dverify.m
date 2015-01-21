@@ -154,7 +154,6 @@ displacement=[disX disY];
 %Display Structure %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 plotDis2D(node,displacement,stress,bc.load,bc.fix,region,member,dv.crossSection,checkMember);
 end
-
 function [result, Group] = validateStability(~,member)
 global PRB;
 bc = PRB.bc;
