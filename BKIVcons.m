@@ -55,14 +55,14 @@ switch type
         slendernessRatio=dat2/dat3;
         if dat1<0
             if abs(dat1)>0.00001
-                % Tensile
+                % Compression
                 maxRatio=200;
             else
-                % Compression
+                % Tensile
                 maxRatio=300;
             end
         else
-            % Compression
+            % Tensile
             maxRatio=300;
         end
         if slendernessRatio>maxRatio
