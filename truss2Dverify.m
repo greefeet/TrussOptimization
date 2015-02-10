@@ -14,6 +14,22 @@ fprintf('     fitness: %.0f\n',fitness);
 [node, member] = Truss2Ddecode(indi);
 numberMember=length(member(:,1));
 numberNode=length(node(:,1));
+
+for i=1:numberMember
+    AssignMember{i,1}=i;
+    AssignMember{i,2}=sprintf('%d-%d',member(i,1),member(i,2));
+    AssignMember{i,3}=sprintf('%.4f',member(i,3));
+    AssignMember{i,4}=sprintf('%.4f',member(i,4));
+end
+assignin('base', 'AssignMember', AssignMember);
+
+for i=1:numberNode
+    AssignNode{i,1}=i;    
+    AssignNode{i,2}=sprintf('%.4f',node(i,1));
+    AssignNode{i,3}=sprintf('%.4f',node(i,2));
+end
+assignin('base', 'AssignNode', AssignNode);
+
 no=length(bc.fix(:,1));
 r=0;
 for i=1:no
@@ -67,7 +83,7 @@ weight=0;
 checkMember=1:numberMember;
 for i=1:numberMember
     if member(i,3) > 0
-        fprintf('   Member%d\n',i);
+        fprintf('   Member%d (%d-%d)\n',i,member(i,1),member(i,2));
         fprintf('      StartNode   : (%.1f,%.1f)\n',node(member(i,1),1),node(member(i,1),2));
         fprintf('      StopNode    : (%.1f,%.1f)\n',node(member(i,2),1),node(member(i,2),2));
         tLength=sqrt((node(member(i,1),1)-node(member(i,2),1))^2+(node(member(i,1),2)-node(member(i,2),2))^2);
@@ -103,7 +119,7 @@ for i=1:numberMember
         end
         fprintf('\n');
     else
-        fprintf('   Member%d\n',i);
+        fprintf('   Member%d (%d-%d)\n',i,member(i,1),member(i,2));
         fprintf('      StartNode   : (%.1f,%.1f)\n',node(member(i,1),1),node(member(i,1),2));
         fprintf('      StopNode    : (%.1f,%.1f)\n',node(member(i,2),1),node(member(i,2),2));
         tLength=sqrt((node(member(i,1),1)-node(member(i,2),1))^2+(node(member(i,1),2)-node(member(i,2),2))^2);
