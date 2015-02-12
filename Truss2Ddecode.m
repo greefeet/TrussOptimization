@@ -33,7 +33,7 @@ for i=1:NOF.FixNode
     Raw(i).indeStruct = FixData(i,NOF.CrossSectionSet*2 + 1:NOF.CrossSectionSet*2 + NOF.IndeterminateZone);
 end
 for i=1:NOF.FreeNode
-    nI = NOF.FixNode+i; 
+    nI = NOF.FixNode+i;
     %node
     if FreeData(i,3) >= 0.5
         noNode=noNode+1;
