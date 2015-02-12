@@ -27,7 +27,7 @@ for i=1:NOF.FixNode
     rawNode(noNode,1:2) = [PRB.bc.node(i,1) PRB.bc.node(i,2)];
     rawAd(noNode,1) = i;
     %Prepare CrossSectionData
-    Raw(i).crossSection.SectionIndex = FixData(1,1:NOF.CrossSectionSet); 
+    Raw(i).crossSection.SectionIndex = FixData(i,1:NOF.CrossSectionSet); 
     Raw(i).crossSection.Priority = FixData(i,NOF.CrossSectionSet+1:NOF.CrossSectionSet*2);
     %Prepare IndeterminateStructureData
     Raw(i).indeStruct = FixData(i,NOF.CrossSectionSet*2 + 1:NOF.CrossSectionSet*2 + NOF.IndeterminateZone);
