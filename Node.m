@@ -50,19 +50,20 @@ classdef Node
             obj.indeLayerZone=zeros(noSection,1);
         end
         function obj = AddDirectNode(obj,index,x,y)
+            global PRB;
             isExist = 0;
             for i=1:obj.noDirectNode
                 if obj.DirectNode(i)==index
                     isExist = 1;
                 end
             end
-            if isExist == 0
+            tLength = norm([(obj.x-x) (obj.y-y)]);
+            if isExist == 0 && tLength < PRB.dv.lengthMax;
                 now = obj.noDirectNode + 1;
                 obj.noDirectNode = now;
                 obj.DirectNode(now) = index;
                 
-                obj.DirectNodeLength(now) = norm([(obj.x-x) (obj.y-y)]);
-                
+                obj.DirectNodeLength(now) = tLength;
                 angle = getAngle([obj.x obj.y],[x y]);
                 zone=ceil(angle*obj.noSection/360);
                 obj.DirectNodeAngle(now) = angle;
@@ -73,24 +74,26 @@ classdef Node
             end 
         end
         function obj = AddOutNode(obj,index,x,y)
+            global PRB;
             isExist = 0;
             for i=1:obj.noOutNode
                 if obj.OutNode(i)==index
                     isExist = 1;
                 end
             end
+            tLength = norm([(obj.x-x) (obj.y-y)]);
             if isExist == 0
                 for i=1:obj.noDirectNode
                     if obj.DirectNode(i)==index
                         isExist = 1;
                     end
                 end
-                if isExist == 0
+                if isExist == 0 && tLength < PRB.dv.lengthMax;
                     now = obj.noOutNode + 1; 
                     obj.noOutNode = now;
                     obj.OutNode(now) = index;
                     
-                    obj.OutNodeLength(now) = norm([(obj.x-x) (obj.y-y)]);
+                    obj.OutNodeLength(now) = tLength;
                     
                     angle = getAngle([obj.x obj.y],[x y]);
                     zone=ceil(angle*obj.noSection/360);
