@@ -48,7 +48,7 @@ for j=1:noFile
         xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f %s\n%s, Population''s size %d',j,Running.stat(j,3),PRB.info.Label,Method.name,Method.NoSolver));
                 
         %Transform RAW Data to Truss Structure
-        [node, member]=Truss2Ddecode(Solution.indi);
+        [node, member]=feval(strcat(Solution.func,'decode'),Solution.indi);
         noMember=length(member(:,1));
         noNode=length(node(:,1));
         
