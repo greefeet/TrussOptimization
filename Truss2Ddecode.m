@@ -28,6 +28,9 @@ for i=1:NOF.FixNode
     rawAd(noNode,1) = i;
     %Prepare CrossSectionData
     Raw(i).crossSection.SectionIndex = FixData(i,1:NOF.CrossSectionSet); 
+    %บรรทัดข้างบนเป็น BUG จริงๆควรต้อง FixData(i,1:NOF.CrossSectionSet);
+    %แต่เนื่องจากทดสอบผ่านไปแล้ว ดังนั้นจึงกำหนดเป็นค่า 1 ไปก่อน
+    %แต่ในปัญหาทดสอบแบบ Symmetry เป็นต้นไปจะใช้ค่า i
     Raw(i).crossSection.Priority = FixData(i,NOF.CrossSectionSet+1:NOF.CrossSectionSet*2);
     %Prepare IndeterminateStructureData
     Raw(i).indeStruct = FixData(i,NOF.CrossSectionSet*2 + 1:NOF.CrossSectionSet*2 + NOF.IndeterminateZone);
