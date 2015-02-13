@@ -221,7 +221,7 @@ switch PRB.dv.TypeSection
         %Discrete CrossSection
         for i=1:noNode
             %Build Member from Determinate Structure
-            for j=1:dNode(i).noDirectNode 
+            for j=1:dNode(i).noDirectNode
                 noMember = noMember+1;
                 temp(1)=i;temp(2)=dNode(i).DirectNode(j);
                 rMember(noMember,1) = min(temp);
