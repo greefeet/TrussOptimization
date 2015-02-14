@@ -280,31 +280,45 @@ draw=node+displacement;
 no=size(element);
 no=no(1);
 
-switch PRB.dv.TypeSection
-    case TypeSection.Discrete
-        maxA=max(PRB.dv.crossSection(:,1));
-        minA=min(PRB.dv.crossSection(:,1));
-    case TypeSection.Continuous
-        maxA=PRB.dv.sectionMax;
-        minA=PRB.dv.sectionMin;
-end
+maxA=max(element(:,3));
+minA=min(element(:,3));
+% switch PRB.dv.TypeSection
+%     case TypeSection.Discrete
+%         maxA=max(dv.crossSection(:,1));
+%         minA=min(dv.crossSection(:,1));
+%     case TypeSection.Continuous
+%         maxA=PRB.dv.sectionMax;
+%         minA=PRB.dv.sectionMin;
+% end
 
 %Draw Member
 for i=1:no
-    lw=1+4*(element(i,3)-minA)/(maxA-minA);
+    lw=1+10*(element(i,3)-minA)/(maxA-minA);
     plot(node(element(i,1:2),1),node(element(i,1:2),2),'-black','LineWidth',lw);
 end
 
-%Draw Member Displacement
-for i=1:no
-    lw=1;
-    if stress(i)>0
-        line='--green';
-    else
-        line='--red';
-    end
-    plot(draw(element(i,1:2),1),draw(element(i,1:2),2),line,'LineWidth',lw);
+% %Draw Member Displacement
+% for i=1:no
+%     lw=1;
+%     if stress(i)>0
+%         line='--green';
+%     else
+%         line='--red';
+%     end
+%     plot(draw(element(i,1:2),1),draw(element(i,1:2),2),line,'LineWidth',lw);
+% end
+
+height=region(4)-region(3);
+height=height*0.7;
+width=region(2)-region(1);
+width=width*0.2;
+if width<height
+    height=width;
+else
+    width=height;
 end
+axis([region(1)-width region(2)+width region(3)-height region(4)+height])
+pause
 
 plot(node(fix(:,1),1),node(fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
 h=plot(node(load(:,1),1),node(load(:,1),2),'mV','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','red','MarkerSize',7);
@@ -331,16 +345,7 @@ for i=1:no
     tt=sprintf('%d',i);
     text(nowX,nowY,tt,'BackgroundColor',ttColor)
 end
-height=region(4)-region(3);
-height=height*0.7;
-width=region(2)-region(1);
-width=width*0.2;
-if width<height
-    height=width;
-else
-    width=height;
-end
-axis([region(1)-width region(2)+width region(3)-height region(4)+height])
+
 end
 function [h]=drawGroup(node,group,load,fix,region,element,crossSection)
 % plot Input - Node Support Element Load

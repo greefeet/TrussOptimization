@@ -39,18 +39,20 @@ plot(bc.node(bc.fix(:,1),1),bc.node(bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdg
 % pause
 [node, member]=TrussSymmetry2Ddecode(indi);
 noMember=length(member(:,1));
-switch PRB.dv.TypeSection
-    case TypeSection.Discrete
-        maxA=max(dv.crossSection(:,1));
-        minA=min(dv.crossSection(:,1));
-    case TypeSection.Continuous
-        maxA=PRB.dv.sectionMax;
-        minA=PRB.dv.sectionMin;
-end
+maxA=max(member(:,3));
+minA=min(member(:,3));
+% switch PRB.dv.TypeSection
+%     case TypeSection.Discrete
+%         maxA=max(dv.crossSection(:,1));
+%         minA=min(dv.crossSection(:,1));
+%     case TypeSection.Continuous
+%         maxA=PRB.dv.sectionMax;
+%         minA=PRB.dv.sectionMin;
+% end
 
 
 for i=1:noMember
-    lw=1+4*(member(i,3)-minA)/(maxA-minA);
+    lw=1+10*(member(i,3)-minA)/(maxA-minA);
     plot(node(member(i,1:2),1),node(member(i,1:2),2),'-black','LineWidth',lw);
 end
 noNode=length(node(:,1));
