@@ -151,11 +151,15 @@ lengthX=PRB.dv.xMax/xnum;
 ynum=round(PRB.dv.yMax/rectangSide);
 lengthY=PRB.dv.yMax/ynum;
 
+
 global lineX;
+global lineY;
+lineX=0:lengthX:PRB.dv.xMax;
+lineY=0:lengthY:PRB.dv.yMax;
+
 global SymmetryBoundLeft;
 global SymmetryBoundRight;
 global width;
-lineX=0:lengthX:PRB.dv.xMax;
 
 noLineX = length(lineX);
 SymmetryIndex = round(noLineX/2);
@@ -221,17 +225,18 @@ fprintf('         = %d\n',noVar);
 %Initialization %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 warning('off','MATLAB:delaunay:DupPtsDelaunayWarnId');  % FixDelaunayWarn
 verifyOpenSees();                                       % Verify OpenSees
-displayInitial(lengthX,lengthY);                        % Display Initial
+displayInitial;                        % Display Initial
 
 %Wait %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('\nPress any key to Start...\n');       pause
 end
 
-function displayInitial(lengthX,lengthY)
+function displayInitial
 %Global Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global PRB;                     % From Problem's Function
-global lineX; global lineY;     % To Truss2Drun Function
 global showDetail;              % For HelpDraw
+global lineX;
+global lineY;
 showDetail = 0;                 % Set Initial FOR Binary and CalFitness
 
 global isSave;                  % For Truss2Drun save figure
@@ -266,7 +271,6 @@ plot(PRB.bc.node(PRB.bc.load(:,1),1),PRB.bc.node(PRB.bc.load(:,1),2),'mV','LineW
 plot(PRB.bc.node(PRB.bc.fix(:,1),1),PRB.bc.node(PRB.bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
 
 % Grid
-lineX=0:lengthX:PRB.dv.xMax;    lineY=0:lengthY:PRB.dv.yMax;
 for i=1:length(lineX)
     plot([lineX(i) lineX(i)],[PRB.dv.yMin PRB.dv.yMax],'--black','LineWidth',1);
 end

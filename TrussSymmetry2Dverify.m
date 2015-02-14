@@ -1,5 +1,5 @@
-function Truss2Dverify(indi)
-%Truss2Dverify %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function TrussSymmetry2Dverify(indi)
+%TrussSymmetry2Dverify %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global PRB;
 bc =  PRB.bc;
 dv = PRB.dv;
@@ -7,7 +7,7 @@ mp = PRB.mp;
 prob = PRB.info.prob;
 
 fprintf('[Validate Results]\n');
-fitness=Truss2D(indi);
+fitness=TrussSymmetry2D(indi);
 fprintf('     fitness: %.0f\n',fitness);
 
 %Transform RAW Data to Truss Structure %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

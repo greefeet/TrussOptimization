@@ -36,6 +36,7 @@ plot(bc.node(bc.load(:,1),1),bc.node(bc.load(:,1),2),'mV','LineWidth',1,'MarkerE
 %support
 plot(bc.node(bc.fix(:,1),1),bc.node(bc.fix(:,1),2),'ms','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',7);
 
+% pause
 [node, member]=TrussSymmetry2Ddecode(indi);
 noMember=length(member(:,1));
 switch PRB.dv.TypeSection
@@ -62,9 +63,9 @@ til=sprintf('Best Individual\n');
 title(til,'FontWeight','bold')
 xlabel(sprintf('x\n\nGeneration %d, Fitness %.0f %s\n%s, Population''s size %d',gen,statistic.hisFitness(gen),PRB.info.Label,Method.name,Method.NoSolver));
 
-
+% pause
 showDetail=1;
-feval('Truss2D',indi);
+feval('TrussSymmetry2D',indi);
 pause(0.0001);
 showDetail=0;
 

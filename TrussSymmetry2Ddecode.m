@@ -20,28 +20,24 @@ rawNode = zeros(NOF.FixNode+NOF.FreeNode,2);
 rawAd = zeros(NOF.FixNode+NOF.FreeNode,2);
 %STEP2 - DecodeNode %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 noNode = 0;
-
-
-global SymmetryBoundLeft;
-global SymmetryBoundRight;
-LeftNode=[];
-CoreNode=[];
 for i=1:NOF.FixNode
     %node
     noNode=noNode+1;
     rawNode(noNode,1:2) = [PRB.bc.node(i,1) PRB.bc.node(i,2)];
     rawAd(noNode,1) = i;
+    
     %Prepare CrossSectionData
     Raw(i).crossSection.SectionIndex = FixData(i,1:NOF.CrossSectionSet);
-    
     Raw(i).crossSection.Priority = FixData(i,NOF.CrossSectionSet+1:NOF.CrossSectionSet*2);
     
-%     fprintf('thissssssss\n');
-%     FixData(i,NOF.CrossSectionSet+1:NOF.CrossSectionSet*2)
-%     pause
     %Prepare IndeterminateStructureData
     Raw(i).indeStruct = FixData(i,NOF.CrossSectionSet*2 + 1:NOF.CrossSectionSet*2 + NOF.IndeterminateZone);
 end
+global SymmetryBoundLeft;
+global SymmetryBoundRight;
+global width;
+LeftNode=[];
+CoreNode=[];
 for i=1:NOF.FreeNode
     nI = NOF.FixNode+i; 
     %node
@@ -62,21 +58,21 @@ for i=1:NOF.FreeNode
     %Prepare IndeterminateStructureData
     Raw(nI).indeStruct = FreeData(i,3+NOF.CrossSectionSet*2+1:3+NOF.CrossSectionSet*2+NOF.IndeterminateZone);
 end
-global width;
-RightNode=LeftNode;
-for i=1:length(LeftNode(:,1))
-    RightNode(i,1)=width-RightNode(i,1);
+if ~isempty(LeftNode(:,1))
+    RightNode=LeftNode;
+    for i=1:length(LeftNode(:,1))
+        RightNode(i,1)=width-RightNode(i,1);
+    end
 end
+
 
 noLeftNode=size(LeftNode);noLeftNode=noLeftNode(1);
 noCoreNode=size(CoreNode);noCoreNode=noCoreNode(1);
 noOnlyUsedNode=NOF.FixNode+noLeftNode+noCoreNode;
 noNode=NOF.FixNode+noLeftNode*2+noCoreNode;
-
-% noNode = NOF.FixNode+2*length(LeftNode(:,1))
 node = [PRB.bc.node(:,:); LeftNode; CoreNode; RightNode];
 ad = rawAd(1:noOnlyUsedNode,1);
-% pause
+
 %STEP3 - DecodeConnectivity %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %DelaunayTriangulation
 tri=delaunayTriangulation(node).ConnectivityList;
@@ -302,6 +298,9 @@ switch PRB.dv.TypeSection
                         rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
                         rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
                         rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+
+
+
                         
                         %Build Initial Mirror Member
                         if temp(1) <= NOF.FixNode
@@ -350,6 +349,8 @@ switch PRB.dv.TypeSection
                     rMember(noMember,3) = dNode(i).DirectNodeSectionIndex(j);
                     rMember(noMember,4) = dNode(i).DirectNodeSectionIndex(j);
                     rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+                    
+                    
                     
                     %Build Initial Mirror Member
                     if temp(1) <= NOF.FixNode
@@ -437,7 +438,7 @@ for i=1:noTotalMember
     end
 end
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % global lineX;
 % global lineY;
 % % Draw Structure
@@ -481,7 +482,7 @@ end
 % 
 % 
 % plot(RightNode(1:noLeftNode,1),RightNode(1:noLeftNode,2),'mO','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','Red','MarkerSize',7);
-% 
+% fprintf('Decode\n');
 % pause
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
