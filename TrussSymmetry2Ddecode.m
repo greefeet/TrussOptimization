@@ -59,8 +59,8 @@ for i=1:NOF.FreeNode
     Raw(nI).indeStruct = FreeData(i,3+NOF.CrossSectionSet*2+1:3+NOF.CrossSectionSet*2+NOF.IndeterminateZone);
 end
 noLeftNode=size(LeftNode);noLeftNode=noLeftNode(1);
+RightNode=LeftNode;
 if noLeftNode~=0
-    RightNode=LeftNode;
     for i=1:length(LeftNode(:,1))
         RightNode(i,1)=width-RightNode(i,1);
     end
