@@ -52,18 +52,23 @@ for j=1:noFile
         noMember=length(member(:,1));
         noNode=length(node(:,1));
         
-        switch PRB.dv.TypeSection
-            case TypeSection.Discrete
-                maxA=max(PRB.dv.crossSection(:,1));
-                minA=min(PRB.dv.crossSection(:,1));
-            case TypeSection.Continuous
-                maxA=PRB.dv.sectionMax;
-                minA=PRB.dv.sectionMin;
-        end
+        maxA=max(member(:,3));
+        minA=min(member(:,3));
+%         switch PRB.dv.TypeSection
+%             case TypeSection.Discrete
+%                 maxA=max(PRB.dv.crossSection(:,1));
+%                 minA=min(PRB.dv.crossSection(:,1));
+%             case TypeSection.Continuous
+%                 maxA=PRB.dv.sectionMax;
+%                 minA=PRB.dv.sectionMin;
+%         end
         
         %Draw Structure
         for i=1:noMember
             lw=1+4*(member(i,3)-minA)/(maxA-minA);
+            if minA==maxA
+                lw=5;
+            end
             plot(node(member(i,1:2),1),node(member(i,1:2),2),'-black','LineWidth',lw);
         end
             

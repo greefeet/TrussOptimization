@@ -294,6 +294,9 @@ minA=min(element(:,3));
 %Draw Member
 for i=1:no
     lw=1+10*(element(i,3)-minA)/(maxA-minA);
+    if minA==maxA
+        lw=5;
+    end
     plot(node(element(i,1:2),1),node(element(i,1:2),2),'-black','LineWidth',lw);
 end
 

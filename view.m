@@ -51,7 +51,6 @@ title('Best Individuals in each Generation','FontWeight','bold')
 isSave=0;
 feval(strcat(func,'run'),gen,bestindi,Method,Running);
 isSave=1;
-
 % Verify %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 feval(strcat(func,'verify'),bestindi);
 end

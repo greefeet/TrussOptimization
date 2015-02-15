@@ -53,6 +53,9 @@ minA=min(member(:,3));
 
 for i=1:noMember
     lw=1+10*(member(i,3)-minA)/(maxA-minA);
+    if minA==maxA
+        lw=5;
+    end
     plot(node(member(i,1:2),1),node(member(i,1:2),2),'-black','LineWidth',lw);
 end
 noNode=length(node(:,1));
