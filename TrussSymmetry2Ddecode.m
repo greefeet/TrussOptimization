@@ -254,7 +254,8 @@ switch PRB.dv.TypeSection
                     SectionIndex = round(dNode(i).DirectNodeSectionIndex(j));
                     rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
                     rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
-                    rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+                    SectorPriority = dNode(i).DirectNodeSectionPriority(j);
+                    rMember(noMember,5) = SectorPriority;
                     
                     %Build Initial Mirror Member
                     if temp(1) <= NOF.FixNode
@@ -283,7 +284,7 @@ switch PRB.dv.TypeSection
                         rMember(noMember,2) = max(temp);
                         rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
                         rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
-                        rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+                        rMember(noMember,5) = SectorPriority;
                     end
                     
                 end
@@ -298,7 +299,8 @@ switch PRB.dv.TypeSection
                         SectionIndex = round(dNode(i).OutNodeSectionIndex(j));
                         rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
                         rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
-                        rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+                        SectorPriority = dNode(i).OutNodeSectionPriority(j);
+                        rMember(noMember,5) = SectorPriority;
 
 
 
@@ -329,7 +331,7 @@ switch PRB.dv.TypeSection
                             rMember(noMember,2) = max(temp);
                             rMember(noMember,3) = PRB.dv.crossSection(SectionIndex,1);
                             rMember(noMember,4) = PRB.dv.crossSection(SectionIndex,2);
-                            rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+                            rMember(noMember,5) = SectorPriority;
                         end
                         
                     end
@@ -349,7 +351,8 @@ switch PRB.dv.TypeSection
                     rMember(noMember,2) = max(temp);
                     rMember(noMember,3) = dNode(i).DirectNodeSectionIndex(j);
                     rMember(noMember,4) = dNode(i).DirectNodeSectionIndex(j);
-                    rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+                    SectorPriority = dNode(i).DirectNodeSectionPriority(j);
+                    rMember(noMember,5) = SectorPriority;
                     
                     
                     
@@ -380,7 +383,7 @@ switch PRB.dv.TypeSection
                         rMember(noMember,2) = max(temp);
                         rMember(noMember,3) = dNode(i).DirectNodeSectionIndex(j);
                         rMember(noMember,4) = dNode(i).DirectNodeSectionIndex(j);
-                        rMember(noMember,5) = dNode(i).DirectNodeSectionPriority(j);
+                        rMember(noMember,5) = SectorPriority;
                     end
                 end
 
@@ -393,7 +396,8 @@ switch PRB.dv.TypeSection
                         rMember(noMember,2) = max(temp);
                         rMember(noMember,3) = dNode(i).OutNodeSectionIndex(j);
                         rMember(noMember,4) = dNode(i).OutNodeSectionIndex(j);
-                        rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+                        SectorPriority = dNode(i).OutNodeSectionPriority(j);
+                        rMember(noMember,5) = SectorPriority;
                         
                         %Build Initial Mirror Member
                         if temp(1) <= NOF.FixNode
@@ -421,7 +425,7 @@ switch PRB.dv.TypeSection
                             rMember(noMember,2) = max(temp);
                             rMember(noMember,3) = dNode(i).OutNodeSectionIndex(j);
                             rMember(noMember,4) = dNode(i).OutNodeSectionIndex(j);
-                            rMember(noMember,5) = dNode(i).OutNodeSectionPriority(j);
+                            rMember(noMember,5) = SectorPriority;
                         end
                     end
                 end
