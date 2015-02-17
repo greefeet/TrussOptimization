@@ -58,7 +58,7 @@ classdef Node
                 end
             end
             tLength = norm([(obj.x-x) (obj.y-y)]);
-            if isExist == 0 % && tLength < PRB.dv.lengthMax;
+            if isExist == 0  && tLength < PRB.dv.lengthMax;
                 now = obj.noDirectNode + 1;
                 obj.noDirectNode = now;
                 obj.DirectNode(now) = index;
@@ -88,7 +88,7 @@ classdef Node
                         isExist = 1;
                     end
                 end
-                if isExist == 0 %&& tLength < PRB.dv.lengthMax;
+                if isExist == 0 && tLength < PRB.dv.lengthMax;
                     now = obj.noOutNode + 1; 
                     obj.noOutNode = now;
                     obj.OutNode(now) = index;
