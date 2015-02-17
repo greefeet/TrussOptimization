@@ -2,9 +2,9 @@ function start
 %START Start Truss Optimization Framework
 
 %Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-prob = 'BKI';
+prob = 'ProbThaiSymII';
 method = 'GA';
-nloop = 300;
+nloop = 500;
 nsol = 500;
 
 %Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
